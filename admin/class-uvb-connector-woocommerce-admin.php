@@ -1,7 +1,6 @@
 <?php
 
-$path = WP_PLUGIN_DIR . '/uvb-connector-woocommerce/vendor/autoload.php';
-require $path;
+require UVB_CONNECTOR_VENDOR_AUTOLOAD_PATH;
 
 use webmenedzser\UVBConnector\UVBConnector;
 
