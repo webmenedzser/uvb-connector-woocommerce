@@ -147,7 +147,9 @@ class UVBConnectorWooCommerce_Public {
      * @return mixed
      */
     public function update_available_payment_options($available_gateways) {
-        global $woocommerce;
+        if ( is_admin() ) {
+            return $available_gateways;
+        }
 
         if (WC()->session->get('email_is_flagged')) {
             $available_gateways = $this->remove_cod_from_payment_options($available_gateways);
