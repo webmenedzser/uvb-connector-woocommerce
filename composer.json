@@ -13,6 +13,6 @@
   ],
   "require": {
     "php": ">=7.0",
-    "webmenedzser/uvb-connector": "^0.2.3"
+    "webmenedzser/uvb-connector": "^1.0.1"
   }
 }
