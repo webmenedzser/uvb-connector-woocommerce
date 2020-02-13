@@ -87,7 +87,7 @@ class UVBConnectorWooCommerce_Public {
             WC()->session->__unset('email_is_flagged');
         }
 
-        $email = $_POST['email'];
+        $email = sanitize_email($_POST['email']);
         $response = $this->checkInUVBService($email);
 
         // If no response is given.
