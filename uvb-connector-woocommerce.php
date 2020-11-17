@@ -8,17 +8,17 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              https://www.webmenedzser.hu
+ * @link              https://utanvet-ellenor.hu
  * @since             1.0.0
  * @package           UVBConnectorWooCommerce
  *
  * @wordpress-plugin
  * Plugin Name:       UV-B Connector for WooCommerce
- * Plugin URI:        https://uvb.webmenedzser.hu
+ * Plugin URI:        https://utanvet-ellenor.hu
  * Description:       🚨 Kiszállításokat szűrünk és védünk.
  * Version:           1.2.1
- * Author:            Radics Ottó
- * Author URI:        https://www.webmenedzser.hu
+ * Author:            Utánvét Ellenőr
+ * Author URI:        https://utanvet-ellenor.hu
  * License:           GPL-3.0+
  * License URI:       http://www.gnu.org/licenses/gpl-3.0.txt
  * Text Domain:       uvb-connector-woocommerce
