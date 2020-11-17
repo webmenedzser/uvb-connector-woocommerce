@@ -16,7 +16,7 @@
  * Plugin Name:       UV-B Connector for WooCommerce
  * Plugin URI:        https://uvb.webmenedzser.hu
  * Description:       🚨 Kiszállításokat szűrünk és védünk.
- * Version:           1.1.4
+ * Version:           1.2.0
  * Author:            Radics Ottó
  * Author URI:        https://www.webmenedzser.hu
  * License:           GPL-3.0+

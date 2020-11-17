@@ -88,7 +88,7 @@ class UVBConnectorWooCommerce_Public {
         }
 
         $email = sanitize_email($_POST['email']);
-        $response = $this->checkInUVBService($email);
+        $response = $this->checkInUVBService($email, $threshold);
 
         // If no response is given.
         if ($response === null) {
@@ -109,10 +109,11 @@ class UVBConnectorWooCommerce_Public {
     /**
      * Check if the user is flagged or not
      *
-     * @param $user_id
+     * @param $email
+     * @param $threshold
      * @return mixed|null
      */
-    public function checkInUVBService($email) {
+    public function checkInUVBService($email, $threshold) {
         $options = get_option('uvb_connector_woocommerce_options');
         $publicApiKey = $options['public_api_key'];
         $privateApiKey = $options['private_api_key'];
@@ -122,6 +123,8 @@ class UVBConnectorWooCommerce_Public {
             $publicApiKey,
             $privateApiKey
         );
+
+        $connector->threshold = $threshold;
 
         return json_decode($connector->get());
     }
