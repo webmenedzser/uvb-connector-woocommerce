@@ -102,6 +102,11 @@ class UVBConnectorWooCommerce_Admin {
     public function sendMinusToUVBService($order_id) {
         $order = wc_get_order($order_id);
 
+        /**
+         * Restock product automatically.
+         */
+        wc_maybe_increase_stock_levels($order_id);
+
         $email = $order->get_billing_email();
         $options = get_option('uvb_connector_woocommerce_options');
         $publicApiKey = $options['public_api_key'];
