@@ -4,6 +4,6 @@
  */
 
 .order-status.status-uvb_flagged {
-    background-image: linear-gradient(to bottom right, #ff7043, #f23564);
+    background: linear-gradient(to bottom right, #d20087, #79098f, #0c024a);
     color: #fff;
 }
