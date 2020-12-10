@@ -111,12 +111,14 @@ class UVBConnectorWooCommerce_Admin {
         $options = get_option('uvb_connector_woocommerce_options');
         $publicApiKey = $options['public_api_key'];
         $privateApiKey = $options['private_api_key'];
+        $production = isset($options['sandbox_mode']) ? false : true;
         $outcome = -1;
 
         $connector = new UVBConnector(
             $email,
             $publicApiKey,
-            $privateApiKey
+            $privateApiKey,
+            $production
         );
 
         return $connector->post($outcome);
@@ -135,12 +137,14 @@ class UVBConnectorWooCommerce_Admin {
         $options = get_option('uvb_connector_woocommerce_options');
         $publicApiKey = $options['public_api_key'];
         $privateApiKey = $options['private_api_key'];
+        $production = isset($options['sandbox_mode']) ? false : true;
         $outcome = 1;
 
         $connector = new UVBConnector(
             $email,
             $publicApiKey,
-            $privateApiKey
+            $privateApiKey,
+            $production
         );
 
         return $connector->post($outcome);

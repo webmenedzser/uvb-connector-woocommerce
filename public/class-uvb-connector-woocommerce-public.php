@@ -117,11 +117,13 @@ class UVBConnectorWooCommerce_Public {
         $options = get_option('uvb_connector_woocommerce_options');
         $publicApiKey = $options['public_api_key'];
         $privateApiKey = $options['private_api_key'];
+        $production = isset($options['sandbox_mode']) ? false : true;
 
         $connector = new UVBConnector(
             $email,
             $publicApiKey,
-            $privateApiKey
+            $privateApiKey,
+            $production
         );
 
         $connector->threshold = $threshold;

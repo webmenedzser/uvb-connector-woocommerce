@@ -16,7 +16,7 @@
  * Plugin Name:       UV-B Connector for WooCommerce
  * Plugin URI:        https://utanvet-ellenor.hu
  * Description:       🚨 Kiszállításokat szűrünk és védünk.
- * Version:           1.2.3
+ * Version:           1.3.0
  * Author:            Utánvét Ellenőr
  * Author URI:        https://utanvet-ellenor.hu
  * License:           GPL-3.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'UVB_CONNECTOR_WOOCOMMERCE_VERSION', '1.2.3' );
+define( 'UVB_CONNECTOR_WOOCOMMERCE_VERSION', '1.3.0' );
 
 /**
  * Define vendor/autoload.php path used across the plugin
@@ -70,6 +70,21 @@ register_deactivation_hook( __FILE__, 'deactivate_uvb_connector_woocommerce' );
  * admin-specific hooks, and public-facing site hooks.
  */
 require plugin_dir_path( __FILE__ ) . 'includes/class-uvb-connector-woocommerce.php';
+
+/**
+ * Add settings link to plugin on Plugins listing page.
+ *
+ * @param $links
+ *
+ * @return mixed
+ */
+function uvb_connector_woocommerce_add_plugin_page_settings_link( $links ) {
+    $links[] = '<a href="' .
+        admin_url( 'options-general.php?page=uvb-connector-woocommerce.php' ) .
+        '">' . __('Settings') . '</a>';
+    return $links;
+}
+add_filter('plugin_action_links_'.plugin_basename(__FILE__), 'uvb_connector_woocommerce_add_plugin_page_settings_link');
 
 /**
  * Begins execution of the plugin.
