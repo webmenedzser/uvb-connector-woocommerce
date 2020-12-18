@@ -1,8 +1,8 @@
 <?php return array (
   'root' => 
   array (
-    'pretty_version' => '1.2.3',
-    'version' => '1.2.3.0',
+    'pretty_version' => '1.3.0',
+    'version' => '1.3.0.0',
     'aliases' => 
     array (
     ),
@@ -92,17 +92,17 @@
     ),
     'webmenedzser/uvb-connector' => 
     array (
-      'pretty_version' => '1.2.0',
-      'version' => '1.2.0.0',
+      'pretty_version' => '1.3.0',
+      'version' => '1.3.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '8a7720e9f518795afcf95b616b754f68f4675027',
+      'reference' => '4f7312edc02fb212daf77c39815984cd82dafe0d',
     ),
     'webmenedzser/uvb-connector-woocommerce' => 
     array (
-      'pretty_version' => '1.2.3',
-      'version' => '1.2.3.0',
+      'pretty_version' => '1.3.0',
+      'version' => '1.3.0.0',
       'aliases' => 
       array (
       ),
