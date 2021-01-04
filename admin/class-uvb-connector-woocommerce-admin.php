@@ -93,6 +93,109 @@ class UVBConnectorWooCommerce_Admin {
         return $order_statuses;
     }
 
+    public function flagOrder($orderId)
+    {
+        $options = get_option('uvb_connector_woocommerce_options');
+        $flagOrders = $options['flag_orders'] ?? false;
+
+        if ($flagOrders) {
+            $order = new WC_Order($orderId);
+            $email = $order->get_billing_email();
+
+            $options = get_option('uvb_connector_woocommerce_options');
+            $publicApiKey = $options['public_api_key'];
+            $privateApiKey = $options['private_api_key'];
+            $production = isset($options['sandbox_mode']) ? false : true;
+            $threshold = $options['reputation_threshold'];
+
+            $connector = new UVBConnector(
+                $email,
+                $publicApiKey,
+                $privateApiKey,
+                $production
+            );
+
+            $connector->threshold = $threshold;
+
+            $response = json_decode($connector->get());
+
+            /**
+             * If the `totalRate` is below the threshold + 5%, mark it as suspicious.
+             */
+            if ($response->message->totalRate < ($threshold * 1.05)) {
+                $flagValue = 'warning';
+            }
+
+            /**
+             * If the `totalRate` is below the threshold, mark it as failed.
+             */
+            if ($response->message->totalRate < $threshold) {
+                $flagValue = 'error';
+            }
+
+            /**
+             * If no `$flagValue` is set, return.
+             */
+            if (!isset($flagValue)) {
+                return;
+            }
+
+            update_post_meta($orderId, '_uvb_connector_woocommerce_flag', $flagValue);
+        }
+    }
+
+    /**
+     * Show notice if the Order was flagged during checkout.
+     */
+    public function showFlagNotice() {
+        global $post;
+
+        $options = get_option('uvb_connector_woocommerce_options');
+        $flagOrders = $options['flag_orders'] ?? false;
+
+        /**
+         * Do not show notices if the flagging is disabled.
+         */
+        if (!$flagOrders) {
+            return;
+        }
+
+        /**
+         * If the screen type and ID are not `shop_order`, return.
+         */
+        $screen = get_current_screen();
+        if ($screen->post_type != 'shop_order' || $screen->id != 'shop_order') {
+            return;
+        }
+
+        $flag = get_post_meta($post->ID, '_uvb_connector_woocommerce_flag', true);
+
+        /**
+         * If no flag exists for the order, return.
+         */
+        if (!$flag) {
+            return;
+        }
+
+        if ($flag == 'error') {
+            $class = 'notice-error';
+            $message = 'Beware! Fulfilling this order might result in a refused package!';
+        }
+        
+        if ($flag == 'warning') {
+            $class = 'notice-warning';
+            $message = 'The reputation for this customer was around the threshold. Be careful when fulfilling this order!';
+        }
+        
+        if (!isset($message)) {
+            return;
+        }
+
+        $message = __($message, 'uvb-connector-woocommerce' );
+
+        printf( '<div class="notice %1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
+    }
+
     /**
      * Flag the user if the order ends up in the 'Flagged' order status
      *

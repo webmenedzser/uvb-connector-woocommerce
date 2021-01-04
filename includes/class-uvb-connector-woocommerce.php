@@ -166,6 +166,10 @@ class UVBConnectorWooCommerce {
         $this->loader->add_action( 'woocommerce_order_status_completed', $plugin_admin, 'sendPlusToUVBService');
         $this->loader->add_action( 'woocommerce_order_status_uvb_flagged', $plugin_admin, 'sendMinusToUVBService');
 
+        // Add hooks needed for order flagging.
+        $this->loader->add_action( 'woocommerce_new_order', $plugin_admin, 'flagOrder');
+        $this->loader->add_action( 'admin_notices', $plugin_admin, 'showFlagNotice');
+
         $this->loader->add_action( 'admin_menu', $plugin_settings, 'add_plugin_page');
 
 	}
