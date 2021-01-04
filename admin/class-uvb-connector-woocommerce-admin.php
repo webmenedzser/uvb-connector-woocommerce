@@ -122,7 +122,7 @@ class UVBConnectorWooCommerce_Admin {
             /**
              * If the `totalRate` is below the threshold + 5%, mark it as suspicious.
              */
-            if ($response->message->totalRate < ($threshold * 1.05)) {
+            if ($threshold != 1 && $response->message->totalRate < ($threshold + 0.05)) {
                 $flagValue = 'warning';
             }
 
