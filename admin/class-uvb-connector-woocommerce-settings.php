@@ -71,6 +71,14 @@ class UVBConnectorWooCommerce_Settings
         );
 
         add_settings_field(
+            'sandbox_mode',
+            __('Sandbox mode', 'uvb-connector-woocommerce'),
+            array( $this, 'sandbox_mode_callback' ),
+            'uvb-connector-woocommerce-admin',
+            'uvb_connector_woocommerce_section_id'
+        );
+
+        add_settings_field(
             'public_api_key', // ID
             __('Public API Key', 'uvb-connector-woocommerce'), // Title
             array( $this, 'public_api_key_callback' ), // Callback
@@ -95,9 +103,9 @@ class UVBConnectorWooCommerce_Settings
         );
 
         add_settings_field(
-            'sandbox_mode',
-            __('Sandbox mode', 'uvb-connector-woocommerce'),
-            array( $this, 'sandbox_mode_callback' ),
+            'payment_methods_to_hide',
+            __('Payment methods to hide', 'uvb-connector-woocommerce'),
+            array( $this, 'payment_methods_to_hide_callback' ),
             'uvb-connector-woocommerce-admin',
             'uvb_connector_woocommerce_section_id'
         );
@@ -107,10 +115,16 @@ class UVBConnectorWooCommerce_Settings
      * Sanitize each setting field as needed
      *
      * @param array $input Contains all settings fields as array keys
+     *
+     * @return array
      */
     public function sanitize( $input )
     {
         $input_array = array();
+
+        if( isset( $input['sandbox_mode'] ) )
+            $input_array['sandbox_mode'] = (bool) $input['sandbox_mode'];
+
         if( isset( $input['public_api_key'] ) )
             $input_array['public_api_key'] = (string) sanitize_text_field($input['public_api_key']);
 
@@ -120,9 +134,8 @@ class UVBConnectorWooCommerce_Settings
         if( isset( $input['reputation_threshold'] ) )
             $input_array['reputation_threshold'] = (float) $input['reputation_threshold'];
 
-        if( isset( $input['sandbox_mode'] ) )
-            $input_array['sandbox_mode'] = (bool) $input['sandbox_mode'];
-
+        if( isset( $input['payment_methods_to_hide'] ) )
+            $input_array['payment_methods_to_hide'] = $input['payment_methods_to_hide'] ?? [];
 
         return $input_array;
     }
@@ -133,6 +146,29 @@ class UVBConnectorWooCommerce_Settings
     public function print_section_info()
     {
         _e('Enter your API keys and set your preferences. ', 'uvb-connector-woocommerce');
+    }
+
+    /**
+     * Get the settings option array and print one of its values
+     */
+    public function sandbox_mode_callback()
+    {
+        $sandboxMode = isset($this->options['sandbox_mode']) ? $this->options['sandbox_mode'] : false;
+        $endpointUrl = $sandboxMode ? \webmenedzser\UVBConnector\UVBConnector::SANDBOX_BASE_URL : \webmenedzser\UVBConnector\UVBConnector::PRODUCTION_BASE_URL;
+
+        if ($sandboxMode) {
+            printf('<input type="checkbox" id="sandbox_mode" name="uvb_connector_woocommerce_options[sandbox_mode]" checked />');
+        } else {
+            printf('<input type="checkbox" id="sandbox_mode" name="uvb_connector_woocommerce_options[sandbox_mode]" />');
+        }
+
+        _e('<p><em>Depending on this setting the plugin will use the production or sandbox environment of Utánvét Ellenőr. <strong>Please make sure this is set up correctly.</strong></em></p>', 'uvb-connector-woocommerce');
+
+        _e("<p>Plugin will use <code>$endpointUrl</code>.</p>", 'uvb-connector-woocommerce');
+
+        if ($sandboxMode) {
+            _e('<p><span style="background: linear-gradient(to bottom right, #d20087, #79098f, #0c024a); color: white; font-weight: bold; display: inline-block; padding: 0.25rem 0.75rem; border-radius: 4px;">SANDBOX ENABLED</span></p>');
+        }
     }
 
     /**
@@ -173,23 +209,39 @@ class UVBConnectorWooCommerce_Settings
     /**
      * Get the settings option array and print one of its values
      */
-    public function sandbox_mode_callback()
+    public function payment_methods_to_hide_callback()
     {
-        $sandboxMode = isset($this->options['sandbox_mode']) ? $this->options['sandbox_mode'] : false;
-        $endpointUrl = $sandboxMode ? \webmenedzser\UVBConnector\UVBConnector::SANDBOX_BASE_URL : \webmenedzser\UVBConnector\UVBConnector::PRODUCTION_BASE_URL;
+        $values = $this->options['payment_methods_to_hide'] ?? [];
+        $options = WC()->payment_gateways()->get_available_payment_gateways() ?? [];
 
-        if ($sandboxMode) {
-            printf('<input type="checkbox" id="sandbox_mode" name="uvb_connector_woocommerce_options[sandbox_mode]" checked />');
-        } else {
-            printf('<input type="checkbox" id="sandbox_mode" name="uvb_connector_woocommerce_options[sandbox_mode]" />');
+        if (!count($options)) {
+            echo 'No payment methods defined yet.';
+            return;
         }
 
-        _e('<p><em>Depending on this setting the plugin will use the production or sandbox environment of Utánvét Ellenőr. <strong>Please make sure this is set up correctly.</strong></em></p>', 'uvb-connector-woocommerce');
+        $html = '<fieldset>';
 
-        _e("<p>Plugin will use <code>$endpointUrl</code>.</p>", 'uvb-connector-woocommerce');
+        foreach ($options as $option) {
+            $html .= "<label for='$option->id'>";
 
-        if ($sandboxMode) {
-            _e('<p><span style="background: linear-gradient(to bottom right, #d20087, #79098f, #0c024a); color: white; font-weight: bold; display: inline-block; padding: 0.25rem 0.75rem; border-radius: 4px;">SANDBOX ENABLED</span></p>');
+            $html .= "<input 
+              name='uvb_connector_woocommerce_options[payment_methods_to_hide][]' 
+              id='$option->id' 
+              type='checkbox' 
+              value='$option->id'";
+
+            if (in_array($option->id, $values)) {
+              $html .= "checked";
+            }
+
+            $html .= "/>";
+
+            $html .= "$option->title";
+            $html .= "</label><br/>";
         }
+
+        $html .= '</fieldset>';
+
+        echo $html;
     }
 }

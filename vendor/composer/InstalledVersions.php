@@ -1,5 +1,15 @@
 <?php
 
+
+
+
+
+
+
+
+
+
+
 namespace Composer;
 
 use Composer\Semver\VersionParser;
@@ -14,8 +24,8 @@ class InstalledVersions
 private static $installed = array (
   'root' => 
   array (
-    'pretty_version' => '1.3.0',
-    'version' => '1.3.0.0',
+    'pretty_version' => '1.5.0',
+    'version' => '1.5.0.0',
     'aliases' => 
     array (
     ),
@@ -114,8 +124,8 @@ private static $installed = array (
     ),
     'webmenedzser/uvb-connector-woocommerce' => 
     array (
-      'pretty_version' => '1.3.0',
-      'version' => '1.3.0.0',
+      'pretty_version' => '1.5.0',
+      'version' => '1.5.0.0',
       'aliases' => 
       array (
       ),

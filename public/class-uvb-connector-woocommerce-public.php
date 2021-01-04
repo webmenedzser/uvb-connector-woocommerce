@@ -132,14 +132,26 @@ class UVBConnectorWooCommerce_Public {
     }
 
     /**
-     * Remove payment option from available gateways
+     * Remove payment options from available gateways
      *
      * @param $available_gateways
      * @return array
      */
-    public function remove_cod_from_payment_options($available_gateways) : array {
-        if ( isset( $available_gateways['cod'] ) ) {
-            unset( $available_gateways['cod'] );
+    public function remove_payment_methods($available_gateways) : array {
+        $options = get_option('uvb_connector_woocommerce_options');
+        $payment_methods_to_hide = $options['payment_methods_to_hide'] ?? [];
+
+        /**
+         * If there are no payment methods to hide, return.
+         */
+        if (!$payment_methods_to_hide || !count($payment_methods_to_hide)) {
+            return $available_gateways;
+        }
+
+        foreach ($available_gateways as $key => $value) {
+            if (in_array($key, $payment_methods_to_hide)) {
+                unset($available_gateways[$key]);
+            }
         }
 
         return $available_gateways;
@@ -157,7 +169,7 @@ class UVBConnectorWooCommerce_Public {
         }
 
         if (WC()->session->get('email_is_flagged')) {
-            $available_gateways = $this->remove_cod_from_payment_options($available_gateways);
+            $available_gateways = $this->remove_payment_methods($available_gateways);
         }
 
         return $available_gateways;

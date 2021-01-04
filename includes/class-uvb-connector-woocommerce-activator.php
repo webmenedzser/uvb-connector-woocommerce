@@ -30,7 +30,15 @@ class UVBConnectorWooCommerce_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
+	    $options = get_option('uvb_connector_woocommerce_options');
 
+        /**
+         * Add Cash on Delivery as a default if the payment_methods_to_hide key is missing.
+         */
+	    if (!array_key_exists('payment_methods_to_hide', $options)) {
+            $options['payment_methods_to_hide'] = ['cod'];
+
+            update_option('uvb_connector_woocommerce_options', $options);
+        }
 	}
-
 }
