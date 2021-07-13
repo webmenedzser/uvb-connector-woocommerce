@@ -4,12 +4,12 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit20c5dead0d2144649c2fc9933b043d98
+class ComposerStaticInitd4a524f39c93fc23b0d9afeebcf6b985
 {
     public static $files = array (
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
+        '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
@@ -82,9 +82,9 @@ class ComposerStaticInit20c5dead0d2144649c2fc9933b043d98
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit20c5dead0d2144649c2fc9933b043d98::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit20c5dead0d2144649c2fc9933b043d98::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit20c5dead0d2144649c2fc9933b043d98::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitd4a524f39c93fc23b0d9afeebcf6b985::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitd4a524f39c93fc23b0d9afeebcf6b985::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitd4a524f39c93fc23b0d9afeebcf6b985::$classMap;
 
         }, null, ClassLoader::class);
     }
