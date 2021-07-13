@@ -2,7 +2,7 @@
   "name": "webmenedzser/uvb-connector-woocommerce",
   "description": "UVB Connector for WooCommerce",
   "minimum-stability": "stable",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "license": "MIT",
   "authors": [
     {
