@@ -172,6 +172,10 @@ class UVBConnectorWooCommerce {
         $this->loader->add_action( 'manage_edit-shop_order_columns', $plugin_admin, 'addColumnFlagged');
         $this->loader->add_action( 'manage_shop_order_posts_custom_column', $plugin_admin, 'showFlagNoticeInColumn');
 
+        // Add hooks for bulk order status changes
+        $this->loader->add_filter('bulk_actions-edit-shop_order', $plugin_admin, 'addUvbActionsToBulkMenu');
+        $this->loader->add_action('admin_init', $plugin_admin, 'catchUvbActionFromBulkMenu');
+
         $this->loader->add_action( 'admin_menu', $plugin_settings, 'add_plugin_page');
 
 	}
