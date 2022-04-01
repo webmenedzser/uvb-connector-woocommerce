@@ -223,10 +223,10 @@ class UVBConnectorWooCommerce_Settings
     public function payment_methods_to_hide_callback()
     {
         $values = $this->options['payment_methods_to_hide'] ?? [];
-        $options = WC()->payment_gateways()->get_available_payment_gateways() ?? [];
+        $options = WC()->payment_gateways()->payment_gateways() ?? [];
 
         if (!count($options)) {
-            echo 'No payment methods defined yet.';
+            echo 'No payment methods installed yet.';
             return;
         }
 
