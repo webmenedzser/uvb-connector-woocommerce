@@ -168,6 +168,11 @@ class UVBConnectorWooCommerce_Public {
             return $available_gateways;
         }
 
+        if (!isset(WC()->session)) {
+            return $available_gateways;
+        }
+
+
         if (WC()->session->get('email_is_flagged')) {
             $available_gateways = $this->remove_payment_methods($available_gateways);
         }
