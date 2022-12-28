@@ -138,7 +138,7 @@ class UVBConnectorWooCommerce_Admin {
             return null;
         }
 
-        if (0 < $threshold - $totalRate < 0.05) {
+        if (0 < $threshold - $totalRate && $threshold - $totalRate < 0.05) {
             return 'warning';
         }
 
