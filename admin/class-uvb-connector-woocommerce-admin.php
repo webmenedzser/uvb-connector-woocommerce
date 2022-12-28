@@ -125,29 +125,24 @@ class UVBConnectorWooCommerce_Admin {
 
             $response = json_decode($connector->get());
 
-            /**
-             * If the `totalRate` is below the threshold + 5%, mark it as suspicious.
-             */
-            if ($threshold != 1 && $response->message->totalRate < ($threshold + 0.05)) {
-                $flagValue = 'warning';
+            $flagValue = $this->getFlagValue($threshold, $response->message->totalRate);
+            if ($flagValue) {
+                update_post_meta($orderId, '_uvb_connector_woocommerce_flag', $flagValue);
             }
-
-            /**
-             * If the `totalRate` is below the threshold, mark it as failed.
-             */
-            if ($response->message->totalRate < $threshold) {
-                $flagValue = 'error';
-            }
-
-            /**
-             * If no `$flagValue` is set, return.
-             */
-            if (!isset($flagValue)) {
-                return;
-            }
-
-            update_post_meta($orderId, '_uvb_connector_woocommerce_flag', $flagValue);
         }
+    }
+
+    public function getFlagValue($threshold, $totalRate) 
+    {
+        if ($threshold <= $totalRate) {
+            return null;
+        }
+
+        if (0 < $threshold - $totalRate < 0.05) {
+            return 'warning';
+        }
+
+        return 'error';
     }
 
     /**
