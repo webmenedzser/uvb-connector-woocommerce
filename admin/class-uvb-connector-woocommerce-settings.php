@@ -22,8 +22,8 @@ class UVBConnectorWooCommerce_Settings
     {
         // This page will be under "Settings"
         add_options_page(
-            'UV-B Connector',
-            'UV-B Connector',
+            __('UV-B Connector', 'uvb-connector-woocommerce'),
+            __('UV-B Connector', 'uvb-connector-woocommerce'),
             'manage_options',
             'uvb-connector-woocommerce.php',
             array( $this, 'create_admin_page' )
@@ -175,10 +175,8 @@ class UVBConnectorWooCommerce_Settings
 
         _e('<p><em>Depending on this setting the plugin will use the production or sandbox environment of Utánvét Ellenőr. <strong>Please make sure this is set up correctly.</strong></em></p>', 'uvb-connector-woocommerce');
 
-        _e("<p>Plugin will use <code>$endpointUrl</code>.</p>", 'uvb-connector-woocommerce');
-
         if ($sandboxMode) {
-            _e('<p><span style="background: linear-gradient(to bottom right, #d20087, #79098f, #0c024a); color: white; font-weight: bold; display: inline-block; padding: 0.25rem 0.75rem; border-radius: 4px;">SANDBOX ENABLED</span></p>');
+            _e('<p><span style="background: linear-gradient(to bottom right, #d20087, #79098f, #0c024a); color: white; font-weight: bold; display: inline-block; padding: 0.25rem 0.75rem; border-radius: 4px;">SANDBOX</span></p>');
         }
     }
 

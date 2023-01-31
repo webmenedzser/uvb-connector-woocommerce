@@ -13,10 +13,10 @@
  * @package           UVBConnectorWooCommerce
  *
  * @wordpress-plugin
- * Plugin Name:       UV-B Connector for WooCommerce
+ * Plugin Name:       Utánvét Ellenőr
  * Plugin URI:        https://utanvet-ellenor.hu
  * Description:       🚨 Kiszállításokat szűrünk és védünk.
- * Version:           1.7.7
+ * Version:           1.8.0
  * Author:            Utánvét Ellenőr
  * Author URI:        https://utanvet-ellenor.hu
  * License:           GPL-3.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'UVB_CONNECTOR_WOOCOMMERCE_VERSION', '1.7.7' );
+define( 'UVB_CONNECTOR_WOOCOMMERCE_VERSION', '1.8.0' );
 
 /**
  * Define vendor/autoload.php path used across the plugin

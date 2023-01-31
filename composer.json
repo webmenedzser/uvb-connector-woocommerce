@@ -1,14 +1,14 @@
 {
   "name": "webmenedzser/uvb-connector-woocommerce",
-  "description": "UVB Connector for WooCommerce",
+  "description": "Utánvét Ellenőr integráció Woocommerce-hez",
   "minimum-stability": "stable",
-  "version": "1.7.7",
+  "version": "1.8.0",
   "license": "MIT",
   "authors": [
     {
-      "name": "Ottó Radics",
-      "email": "otto@webmenedzser.hu",
-      "homepage": "https://webmenedzser.hu"
+      "name": "dr. Radics Ottó",
+      "email": "iam@ottoradics.com",
+      "homepage": "https://ottoradics.hu"
     }
   ],
   "require": {
