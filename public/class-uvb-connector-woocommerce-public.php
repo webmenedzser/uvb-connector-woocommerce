@@ -64,14 +64,14 @@ class UVBConnectorWooCommerce_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
+        if (function_exists( 'is_woocommerce') && (is_woocommerce() || is_cart() || is_checkout())) {
+            wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/uvb-connector-woocommerce-public.js', array( 'jquery' ), $this->version, false );
 
-        wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/uvb-connector-woocommerce-public.js', array( 'jquery' ), $this->version, false );
-
-        wp_localize_script( $this->plugin_name, 'ajax_object', array(
-            'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'user_email' => NULL
-        ) );
-
+            wp_localize_script( $this->plugin_name, 'ajax_object', array(
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'user_email' => NULL
+            ) );
+        }
 	}
 
     /**
