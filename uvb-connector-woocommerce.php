@@ -16,7 +16,7 @@
  * Plugin Name:       Utánvét Ellenőr
  * Plugin URI:        https://utanvet-ellenor.hu
  * Description:       🚨 Kiszállításokat szűrünk és védünk.
- * Version:           1.9.1
+ * Version:           1.9.2
  * Author:            Utánvét Ellenőr
  * Author URI:        https://utanvet-ellenor.hu
  * License:           GPL-3.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'UVB_CONNECTOR_WOOCOMMERCE_VERSION', '1.9.1' );
+define( 'UVB_CONNECTOR_WOOCOMMERCE_VERSION', '1.9.2' );
 
 /**
  * Define vendor/autoload.php path used across the plugin

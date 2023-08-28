@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "60180f60bef880d8307726bce39f455a",
+    "content-hash": "92fdc832a38577a51e368a551a999016",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -661,16 +661,16 @@
         },
         {
             "name": "webmenedzser/uvb-connector",
-            "version": "1.3.1",
+            "version": "1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmenedzser/uvb-connector.git",
-                "reference": "f6a8c320c8cde4739b3ab7d22c4364eebab1906b"
+                "reference": "762db4425ebed0a1bc85b142e883f81894717272"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmenedzser/uvb-connector/zipball/f6a8c320c8cde4739b3ab7d22c4364eebab1906b",
-                "reference": "f6a8c320c8cde4739b3ab7d22c4364eebab1906b",
+                "url": "https://api.github.com/repos/webmenedzser/uvb-connector/zipball/762db4425ebed0a1bc85b142e883f81894717272",
+                "reference": "762db4425ebed0a1bc85b142e883f81894717272",
                 "shasum": ""
             },
             "require": {
@@ -697,9 +697,9 @@
             "description": "UVB API Connector",
             "support": {
                 "issues": "https://github.com/webmenedzser/uvb-connector/issues",
-                "source": "https://github.com/webmenedzser/uvb-connector/tree/1.3.1"
+                "source": "https://github.com/webmenedzser/uvb-connector/tree/1.3.2"
             },
-            "time": "2021-07-13T12:01:47+00:00"
+            "time": "2023-08-28T10:56:52+00:00"
         }
     ],
     "packages-dev": [],
@@ -709,7 +709,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "~7.0 || ~7.1 || ~7.2 || ~7.3 || ~7.4"
+        "php": "~7.0 || ~7.1 || ~7.2 || ~7.3 || ~7.4 || ~8.0 || ~8.1 || ~8.2"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"
