@@ -1,7 +1,7 @@
 === Utánvét Ellenőr ===
 Contributors: ottoradics
 Tags: cash on delivery,check,filter,utánvét,ellenőr,büntetés,utánvét ellenőr,szűrés
-Tested up to: 6.1
+Tested up to: 6.3
 Requires PHP: 7.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
@@ -16,7 +16,7 @@ Connect your WooCommerce site to our SaaS available at https://utanvet-ellenor.h
 
 ### What is Utánvét Ellenőr?
 
-It is a SaaS provided by Dro-IT Ltd from Hungary: a service which will let shop owners filter orders with Cash on Delivery coming from known fraudulent e-mail addresses.
+It is a SaaS provided by Utánvét Ellenőr Kft. from Hungary: a service which will let shop owners filter orders with Cash on Delivery coming from known fraudulent e-mail addresses.
 
 ### How does it work?
 

@@ -4,6 +4,8 @@ require UVB_CONNECTOR_VENDOR_AUTOLOAD_PATH;
 
 use webmenedzser\UVBConnector\UVBConnector;
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -104,32 +106,60 @@ class UVBConnectorWooCommerce_Admin {
         $options = get_option('uvb_connector_woocommerce_options');
         $flagOrders = $options['flag_orders'] ?? false;
 
-        if ($flagOrders) {
-            $order = new WC_Order($orderId);
-            $email = $order->get_billing_email();
-
-            $options = get_option('uvb_connector_woocommerce_options');
-            $publicApiKey = $options['public_api_key'];
-            $privateApiKey = $options['private_api_key'];
-            $production = isset($options['sandbox_mode']) ? false : true;
-            $threshold = $options['reputation_threshold'];
-
-            $connector = new UVBConnector(
-                $email,
-                $publicApiKey,
-                $privateApiKey,
-                $production
-            );
-
-            $connector->threshold = $threshold;
-
-            $response = json_decode($connector->get());
-
-            $flagValue = $this->getFlagValue($threshold, $response->message->totalRate);
-            if ($flagValue) {
-                update_post_meta($orderId, '_uvb_connector_woocommerce_flag', $flagValue);
-            }
+        if (!$flagOrders) {
+            return;
         }
+
+        $order = new WC_Order($orderId);
+        $email = $order->get_billing_email();
+
+        $options = get_option('uvb_connector_woocommerce_options');
+        $publicApiKey = $options['public_api_key'];
+        $privateApiKey = $options['private_api_key'];
+        $production = isset($options['sandbox_mode']) ? false : true;
+        $threshold = $options['reputation_threshold'];
+
+        $connector = new UVBConnector(
+            $email,
+            $publicApiKey,
+            $privateApiKey,
+            $production
+        );
+
+        $connector->threshold = $threshold;
+
+        $response = json_decode($connector->get());
+
+        $flagValue = $this->getFlagValue($threshold, $response->message->totalRate);
+        if (!$flagValue) {
+            return;
+        }
+
+        self::writeFlagToDb($orderId, $flagValue);
+    }
+
+    public static function writeFlagToDb($orderId, $flagValue)
+    {
+        $metaKey = '_uvb_connector_woocommerce_flag';
+
+        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+            $order = wc_get_order($orderId);
+            $order->add_meta_data($metaKey, $flagValue);
+            $order->save();
+        } else {
+            update_post_meta($orderId, $metaKey, $flagValue);
+        }
+    }
+
+    public static function getFlagFromDb($orderId)
+    {
+        $metaKey = '_uvb_connector_woocommerce_flag';
+
+        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+            return wc_get_order($orderId)->get_meta($metaKey, true);
+        }
+
+        return get_post_meta($orderId, $metaKey, true);
     }
 
     public function getFlagValue($threshold, $totalRate) 
@@ -169,7 +199,7 @@ class UVBConnectorWooCommerce_Admin {
             return;
         }
 
-        $flag = get_post_meta($post->ID, '_uvb_connector_woocommerce_flag', true);
+        $flag = self::getFlagFromDb($post->ID);
 
         /**
          * If no flag exists for the order, return.
@@ -197,10 +227,13 @@ class UVBConnectorWooCommerce_Admin {
         printf( '<div class="notice %1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
     }
 
-    public function showFlagNoticeInColumn( $column ) {
-        global $post;
+    public function showFlagNoticeInColumn($column, $order) {
+        if ($column !== 'uvb_status') {
+            return;
+        }
 
-        $flag = get_post_meta($post->ID, '_uvb_connector_woocommerce_flag', true);
+        $postId = OrderUtil::custom_orders_table_usage_is_enabled() ? json_decode($order)->id : $order;
+        $flag = self::getFlagFromDb($postId);
 
         if ('uvb_status' === $column) {
             if ($flag == 'error') {

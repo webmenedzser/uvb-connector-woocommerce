@@ -156,7 +156,7 @@ class UVBConnectorWooCommerce {
 		$plugin_admin = new UVBConnectorWooCommerce_Admin( $this->get_plugin_name(), $this->get_version() );
         $plugin_settings = new UVBConnectorWooCommerce_Settings( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
+        $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 
 		// Register order status for WooCommerce
 		$this->loader->add_action( 'init', $plugin_admin, 'register_order_status_flagged');
@@ -170,7 +170,9 @@ class UVBConnectorWooCommerce {
         $this->loader->add_action( 'woocommerce_new_order', $plugin_admin, 'flagOrder');
         $this->loader->add_action( 'admin_notices', $plugin_admin, 'showFlagNotice');
         $this->loader->add_action( 'manage_edit-shop_order_columns', $plugin_admin, 'addColumnFlagged');
-        $this->loader->add_action( 'manage_shop_order_posts_custom_column', $plugin_admin, 'showFlagNoticeInColumn');
+        $this->loader->add_action( 'manage_woocommerce_page_wc-orders_columns', $plugin_admin, 'addColumnFlagged');
+        $this->loader->add_action( 'manage_shop_order_posts_custom_column', $plugin_admin, 'showFlagNoticeInColumn', 5, 2);
+        $this->loader->add_action( 'manage_woocommerce_page_wc-orders_custom_column', $plugin_admin, 'showFlagNoticeInColumn', 5, 2);
 
         // Add hooks for bulk order status changes
         $this->loader->add_filter('bulk_actions-edit-shop_order', $plugin_admin, 'addUvbActionsToBulkMenu');
