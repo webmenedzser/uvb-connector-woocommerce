@@ -4,8 +4,6 @@ require UVB_CONNECTOR_VENDOR_AUTOLOAD_PATH;
 
 use webmenedzser\UVBConnector\UVBConnector;
 
-use Automattic\WooCommerce\Utilities\OrderUtil;
-
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -142,7 +140,7 @@ class UVBConnectorWooCommerce_Admin {
     {
         $metaKey = '_uvb_connector_woocommerce_flag';
 
-        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+        if (self::isHposActive()) {
             $order = wc_get_order($orderId);
             $order->add_meta_data($metaKey, $flagValue);
             $order->save();
@@ -155,7 +153,7 @@ class UVBConnectorWooCommerce_Admin {
     {
         $metaKey = '_uvb_connector_woocommerce_flag';
 
-        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+        if (self::isHposActive()) {
             return wc_get_order($orderId)->get_meta($metaKey, true);
         }
 
@@ -232,7 +230,7 @@ class UVBConnectorWooCommerce_Admin {
             return;
         }
 
-        $postId = OrderUtil::custom_orders_table_usage_is_enabled() ? json_decode($order)->id : $order;
+        $postId = self::isHposActive() ? json_decode($order)->id : $order;
         $flag = self::getFlagFromDb($postId);
 
         if ('uvb_status' === $column) {
@@ -334,5 +332,10 @@ class UVBConnectorWooCommerce_Admin {
                 $order->update_status( $new_status, 'Status updated through bulk edit menu.' );
             }
         }
+    }
+
+    public static function isHposActive()
+    {
+        return class_exists(Automattic\WooCommerce\Utilities\OrderUtil::class) && Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
     }
 }
