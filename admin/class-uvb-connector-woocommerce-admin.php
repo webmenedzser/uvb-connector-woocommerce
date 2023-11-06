@@ -307,35 +307,57 @@ class UVBConnectorWooCommerce_Admin {
         return $actions;
     }
 
-    public function catchUvbActionFromBulkMenu() {
-        if ( !isset($_GET['post_type']) || $_GET['post_type'] != 'shop_order' ) {
-            return;
+    public function catchUvbActionFromBulkMenu($redirect, $doaction, $postIds) {
+        if (!wp_verify_nonce( $_GET['_wpnonce'], 'bulk-posts') && !wp_verify_nonce( $_GET['_wpnonce'], 'bulk-orders')) {
+            return $redirect;
         }
 
-        if ( isset($_GET['action']) && 'set-' === substr( $_GET['action'], 0, 4 ) ) {
-            // Check Nonce
-            if ( !check_admin_referer('bulk-posts') ) {
-                return;
-            }
-
-            // Remove 'set-' from action
-            $new_status =  substr( $_GET['action'], 4 );
-
-            $posts = $_GET['post'];
-
-            foreach ($posts as $postID) {
-                if ( !is_numeric($postID) ) {
-                    continue;
-                }
-
-                $order = new WC_Order( (int)$postID );
-                $order->update_status( $new_status, 'Status updated through bulk edit menu.' );
-            }
+        if (!self::isOrdersListPage()) {
+            return $redirect;
         }
+
+        $action = $doaction ?? null;
+        if (!$action) {
+            return $redirect;
+        }
+
+        $status = substr($action, 4, strlen($action) - 4);
+        if ($status !== 'uvb_flagged') {
+            return $redirect;
+        }
+
+        foreach ($postIds as $postId) {
+            self::updateOrderStatus($postId, $status);
+        }
+
+        return $redirect;
     }
 
     public static function isHposActive()
     {
         return class_exists(Automattic\WooCommerce\Utilities\OrderUtil::class) && Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
+    }
+
+    public static function isOrdersListPage()
+    {
+        if (!self::isHposActive()) {
+            $postType = $_GET['post_type'] ?? null;
+
+            return $postType == 'shop_order';
+        }
+
+        $page = $_GET['page'] ?? null;
+
+        return $page == 'wc-orders';
+    }
+
+    public static function updateOrderStatus($orderId, $status)
+    {
+        if (!is_numeric($orderId)) {
+            return;
+        }
+
+        $order = wc_get_order($orderId);
+        $order->update_status($status);
     }
 }

@@ -176,7 +176,9 @@ class UVBConnectorWooCommerce {
 
         // Add hooks for bulk order status changes
         $this->loader->add_filter('bulk_actions-edit-shop_order', $plugin_admin, 'addUvbActionsToBulkMenu');
-        $this->loader->add_action('admin_init', $plugin_admin, 'catchUvbActionFromBulkMenu');
+        $this->loader->add_filter('bulk_actions-woocommerce_page_wc-orders', $plugin_admin, 'addUvbActionsToBulkMenu');
+        $this->loader->add_action('handle_bulk_actions-edit-shop_order', $plugin_admin, 'catchUvbActionFromBulkMenu', 10, 3);
+        $this->loader->add_action('handle_bulk_actions-woocommerce_page_wc-orders', $plugin_admin, 'catchUvbActionFromBulkMenu', 10 , 3);
 
         $this->loader->add_action( 'admin_menu', $plugin_settings, 'add_plugin_page');
 
