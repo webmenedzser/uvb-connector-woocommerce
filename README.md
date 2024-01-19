@@ -2,7 +2,7 @@
 Contributors: ottoradics
 Tags: cash on delivery,check,filter,utánvét,ellenőr,büntetés,utánvét ellenőr,szűrés
 Tested up to: 6.4
-Requires PHP: 7.0
+Requires PHP: 7.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 

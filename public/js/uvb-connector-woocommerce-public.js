@@ -2,7 +2,11 @@
     'use strict';
 
     function checkUVBService(fieldValue) {
-        console.log('Connecting to UVB Service.');
+        if (!fieldValue) {
+          return;
+        }
+
+        console.log('[Utánvét Ellenőr] Ellenőrzés...');
 
         var data = {
             'action': 'check_if_email_is_flagged',
@@ -12,21 +16,20 @@
         // We can also pass the url value separately from ajaxurl for front end AJAX implementations
         jQuery.post(ajax_object.ajax_url, data, function(response) {
             $('body').trigger('update_checkout');
+            console.log('[Utánvét Ellenőr] Kész!');
         });
     }
 
-    jQuery(document).ready(function($) {
-        var billingEmailField = document.querySelector('input[name=billing_email]');
-        if (billingEmailField) {
-            var fieldValue = billingEmailField.value;
-
-            if (fieldValue) {
-                checkUVBService(fieldValue);
-            }
+    window.addEventListener('load', function($) {
+        var billingEmailField = document.querySelector('input[name=billing_email], .woocommerce-checkout input#email');
+        if (!billingEmailField) {
+          return;
         }
 
-        $('input[name=billing_email]').change(function() {
-            checkUVBService($(this).val());
+        checkUVBService(billingEmailField.value);
+
+        billingEmailField.addEventListener('change', function() {
+            checkUVBService(billingEmailField.value);
         });
     });
 
