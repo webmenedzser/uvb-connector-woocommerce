@@ -272,7 +272,7 @@ class UVBConnectorWooCommerce_Admin {
             $production
         );
 
-        return $connector->post($outcome);
+        return $connector->post($outcome, $order_id);
     }
 
     /**
@@ -298,7 +298,7 @@ class UVBConnectorWooCommerce_Admin {
             $production
         );
 
-        return $connector->post($outcome);
+        return $connector->post($outcome, $order_id);
     }
 
     public function addUvbActionsToBulkMenu($actions) {
