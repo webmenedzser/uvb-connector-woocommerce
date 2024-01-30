@@ -153,14 +153,14 @@ class UVBConnectorWooCommerce {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new UVBConnectorWooCommerce_Admin( $this->get_plugin_name(), $this->get_version() );
+	$plugin_admin = new UVBConnectorWooCommerce_Admin( $this->get_plugin_name(), $this->get_version() );
         $plugin_settings = new UVBConnectorWooCommerce_Settings( $this->get_plugin_name(), $this->get_version() );
 
         $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 
-		// Register order status for WooCommerce
-		$this->loader->add_action( 'init', $plugin_admin, 'register_order_status_flagged');
-        $this->loader->add_action( 'wc_order_statuses', $plugin_admin, 'add_order_status_flagged');
+	// Register order status for WooCommerce
+	$this->loader->add_action( 'init', $plugin_admin, 'registerOrderStatusFlagged');
+        $this->loader->add_action( 'wc_order_statuses', $plugin_admin, 'addOrderStatusFlagged');
 
         // Add hooks to `completed` and `uvb_flagged` order statuses
         $this->loader->add_action( 'woocommerce_order_status_completed', $plugin_admin, 'sendPlusToUVBService');

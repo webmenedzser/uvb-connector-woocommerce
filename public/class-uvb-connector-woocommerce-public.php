@@ -44,6 +44,12 @@ class UVBConnectorWooCommerce_Public {
 	 */
 	private $version;
 
+    private $publicKey;
+    private $privateKey;
+    private $production;
+    private $threshold;
+    private $flagOrders;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -56,6 +62,13 @@ class UVBConnectorWooCommerce_Public {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 
+        $options = get_option('uvb_connector_woocommerce_options');
+
+        $this->publicKey = $options['public_api_key'] ?? '';
+        $this->privateKey = $options['private_api_key'] ?? '';
+        $this->production = isset($options['sandbox_mode']) ? false : true;
+        $this->threshold = $options['reputation_threshold'] ?: 0.5;
+        $this->flagOrders = $options['flag_orders'] ?? false;
 	}
 
 	/**
@@ -80,15 +93,12 @@ class UVBConnectorWooCommerce_Public {
      * @return void
      */
 	public function check_if_email_is_flagged() {
-        $options = get_option('uvb_connector_woocommerce_options');
-        $threshold = $options['reputation_threshold'];
-
         if( WC()->session->get('email_is_flagged') ){
             WC()->session->__unset('email_is_flagged');
         }
 
         $email = sanitize_email($_POST['email']);
-        $response = $this->checkInUVBService($email, $threshold);
+        $response = $this->checkInUVBService($email);
 
         // If no response is given.
         if ($response === null) {
@@ -96,7 +106,7 @@ class UVBConnectorWooCommerce_Public {
         }
 
         // If the threshold is not met.
-        if ($response->message->totalRate < $threshold) {
+        if ($response->message->totalRate < $this->threshold) {
             WC()->session->set('email_is_flagged', 1);
 
             wp_die();
@@ -110,23 +120,17 @@ class UVBConnectorWooCommerce_Public {
      * Check if the user is flagged or not
      *
      * @param $email
-     * @param $threshold
      * @return mixed|null
      */
-    public function checkInUVBService($email, $threshold) {
-        $options = get_option('uvb_connector_woocommerce_options');
-        $publicApiKey = $options['public_api_key'];
-        $privateApiKey = $options['private_api_key'];
-        $production = isset($options['sandbox_mode']) ? false : true;
-
+    public function checkInUVBService($email) {
         $connector = new UVBConnector(
             $email,
-            $publicApiKey,
-            $privateApiKey,
-            $production
+            $this->publicKey,
+            $this->privateKey,
+            $this->production
         );
 
-        $connector->threshold = $threshold;
+        $connector->threshold = $this->threshold;
 
         return json_decode($connector->get());
     }

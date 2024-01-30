@@ -44,6 +44,12 @@ class UVBConnectorWooCommerce_Admin {
      */
     private $version;
 
+    private $publicKey;
+    private $privateKey;
+    private $production;
+    private $threshold;
+    private $flagOrders;
+
     /**
      * Initialize the class and set its properties.
      *
@@ -54,6 +60,14 @@ class UVBConnectorWooCommerce_Admin {
     public function __construct( $plugin_name, $version ) {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
+
+        $options = get_option('uvb_connector_woocommerce_options');
+
+        $this->publicKey = $options['public_api_key'] ?? '';
+        $this->privateKey = $options['private_api_key'] ?? '';
+        $this->production = isset($options['sandbox_mode']) ? false : true;
+        $this->threshold = $options['reputation_threshold'] ?: 0.5;
+        $this->flagOrders = $options['flag_orders'] ?? false;
     }
 
     /**
@@ -70,7 +84,7 @@ class UVBConnectorWooCommerce_Admin {
      *
      * @since   1.0.0
      */
-    public function register_order_status_flagged() {
+    public function registerOrderStatusFlagged() {
         register_post_status( 'wc-uvb_flagged', array(
             'label'                     => 'Rendelést nem vette át',
             'public'                    => true,
@@ -87,13 +101,15 @@ class UVBConnectorWooCommerce_Admin {
      * @since   1.0.0
      * @return  array
      */
-    public function add_order_status_flagged($order_statuses) {
+    public function addOrderStatusFlagged($order_statuses)
+    {
         $order_statuses['wc-uvb_flagged'] = 'Rendelést nem vette át';
 
         return $order_statuses;
     }
 
-    public function addColumnFlagged($columns) {
+    public function addColumnFlagged($columns)
+    {
         $columns['uvb_status'] = 'Utánvét Ellenőr státusz';
 
         return $columns;
@@ -101,34 +117,27 @@ class UVBConnectorWooCommerce_Admin {
 
     public function flagOrder($orderId)
     {
-        $options = get_option('uvb_connector_woocommerce_options');
-        $flagOrders = $options['flag_orders'] ?? false;
-
-        if (!$flagOrders) {
+        if (!$this->flagOrders) {
             return;
         }
 
         $order = new WC_Order($orderId);
         $email = $order->get_billing_email();
-
-        $options = get_option('uvb_connector_woocommerce_options');
-        $publicApiKey = $options['public_api_key'];
-        $privateApiKey = $options['private_api_key'];
-        $production = isset($options['sandbox_mode']) ? false : true;
-        $threshold = $options['reputation_threshold'];
-
         $connector = new UVBConnector(
             $email,
-            $publicApiKey,
-            $privateApiKey,
-            $production
+            $this->publicKey,
+            $this->privateKey,
+            $this->production
         );
 
-        $connector->threshold = $threshold;
+        $connector->threshold = $this->threshold;
 
         $response = json_decode($connector->get());
+        if (!$response) {
+            return;
+        }
 
-        $flagValue = $this->getFlagValue($threshold, $response->message->totalRate);
+        $flagValue = $this->getFlagValue($response->message->totalRate);
         if (!$flagValue) {
             return;
         }
@@ -160,13 +169,13 @@ class UVBConnectorWooCommerce_Admin {
         return get_post_meta($orderId, $metaKey, true);
     }
 
-    public function getFlagValue($threshold, $totalRate) 
+    public function getFlagValue($totalRate)
     {
-        if ($threshold <= $totalRate) {
+        if ($this->threshold <= $totalRate) {
             return null;
         }
 
-        if (0 < $threshold - $totalRate && $threshold - $totalRate < 0.05) {
+        if (0 < $this->threshold - $totalRate && $this->threshold - $totalRate < 0.05) {
             return 'warning';
         }
 
@@ -176,16 +185,14 @@ class UVBConnectorWooCommerce_Admin {
     /**
      * Show notice if the Order was flagged during checkout.
      */
-    public function showFlagNotice() {
+    public function showFlagNotice()
+    {
         global $post;
-
-        $options = get_option('uvb_connector_woocommerce_options');
-        $flagOrders = $options['flag_orders'] ?? false;
 
         /**
          * Do not show notices if the flagging is disabled.
          */
-        if (!$flagOrders) {
+        if (!$this->flagOrders) {
             return;
         }
 
@@ -225,7 +232,8 @@ class UVBConnectorWooCommerce_Admin {
         printf( '<div class="notice %1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
     }
 
-    public function showFlagNoticeInColumn($column, $order) {
+    public function showFlagNoticeInColumn($column, $order)
+    {
         if ($column !== 'uvb_status') {
             return;
         }
@@ -250,7 +258,8 @@ class UVBConnectorWooCommerce_Admin {
      * @param $order_id
      * @return void
      */
-    public function sendMinusToUVBService($order_id) {
+    public function sendMinusToUVBService($order_id)
+    {
         $order = wc_get_order($order_id);
 
         /**
@@ -259,17 +268,13 @@ class UVBConnectorWooCommerce_Admin {
         wc_maybe_increase_stock_levels($order_id);
 
         $email = $order->get_billing_email();
-        $options = get_option('uvb_connector_woocommerce_options');
-        $publicApiKey = $options['public_api_key'];
-        $privateApiKey = $options['private_api_key'];
-        $production = isset($options['sandbox_mode']) ? false : true;
         $outcome = -1;
 
         $connector = new UVBConnector(
             $email,
-            $publicApiKey,
-            $privateApiKey,
-            $production
+            $this->publicKey,
+            $this->privateKey,
+            $this->production
         );
 
         return $connector->post($outcome, $order_id);
@@ -281,33 +286,32 @@ class UVBConnectorWooCommerce_Admin {
      * @param $order_id
      * @return void
      */
-    public function sendPlusToUVBService($order_id) {
+    public function sendPlusToUVBService($order_id)
+    {
         $order = wc_get_order($order_id);
 
         $email = $order->get_billing_email();
-        $options = get_option('uvb_connector_woocommerce_options');
-        $publicApiKey = $options['public_api_key'];
-        $privateApiKey = $options['private_api_key'];
-        $production = isset($options['sandbox_mode']) ? false : true;
         $outcome = 1;
 
         $connector = new UVBConnector(
             $email,
-            $publicApiKey,
-            $privateApiKey,
-            $production
+            $this->publicKey,
+            $this->privateKey,
+            $this->production
         );
 
         return $connector->post($outcome, $order_id);
     }
 
-    public function addUvbActionsToBulkMenu($actions) {
+    public function addUvbActionsToBulkMenu($actions)
+    {
         $actions['set-uvb_flagged'] = 'Change status to Rendelést nem vette át';
 
         return $actions;
     }
 
-    public function catchUvbActionFromBulkMenu($redirect, $doaction, $postIds) {
+    public function catchUvbActionFromBulkMenu($redirect, $doaction, $postIds)
+    {
         if (!wp_verify_nonce( $_GET['_wpnonce'], 'bulk-posts') && !wp_verify_nonce( $_GET['_wpnonce'], 'bulk-orders')) {
             return $redirect;
         }
