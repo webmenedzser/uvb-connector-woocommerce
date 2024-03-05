@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b4e3349ecd1cfbcb8bd14d2037c374b4",
+    "content-hash": "7c1bce646775d9bc116b6b32dc181f5f",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -575,16 +575,16 @@
         },
         {
             "name": "symfony/polyfill-php72",
-            "version": "v1.28.0",
+            "version": "v1.29.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php72.git",
-                "reference": "70f4aebd92afca2f865444d30a4d2151c13c3179"
+                "reference": "861391a8da9a04cbad2d232ddd9e4893220d6e25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php72/zipball/70f4aebd92afca2f865444d30a4d2151c13c3179",
-                "reference": "70f4aebd92afca2f865444d30a4d2151c13c3179",
+                "url": "https://api.github.com/repos/symfony/polyfill-php72/zipball/861391a8da9a04cbad2d232ddd9e4893220d6e25",
+                "reference": "861391a8da9a04cbad2d232ddd9e4893220d6e25",
                 "shasum": ""
             },
             "require": {
@@ -592,9 +592,6 @@
             },
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-main": "1.28-dev"
-                },
                 "thanks": {
                     "name": "symfony/polyfill",
                     "url": "https://github.com/symfony/polyfill"
@@ -631,7 +628,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php72/tree/v1.28.0"
+                "source": "https://github.com/symfony/polyfill-php72/tree/v1.29.0"
             },
             "funding": [
                 {
@@ -647,24 +644,24 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-26T09:26:14+00:00"
+            "time": "2024-01-29T20:11:03+00:00"
         },
         {
             "name": "webmenedzser/uvb-connector",
-            "version": "1.4.0",
+            "version": "1.5.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmenedzser/uvb-connector.git",
-                "reference": "07458ace3fd0c03b8c78ef6bb807ffddbb83ec78"
+                "reference": "04f05121520aab7ffccae23b44ab9ec451a3ec8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmenedzser/uvb-connector/zipball/07458ace3fd0c03b8c78ef6bb807ffddbb83ec78",
-                "reference": "07458ace3fd0c03b8c78ef6bb807ffddbb83ec78",
+                "url": "https://api.github.com/repos/webmenedzser/uvb-connector/zipball/04f05121520aab7ffccae23b44ab9ec451a3ec8a",
+                "reference": "04f05121520aab7ffccae23b44ab9ec451a3ec8a",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": "^5.3 || ^6.3",
+                "guzzlehttp/guzzle": "^5.3 || ^6.3 || ^7.3",
                 "php": ">=7.1"
             },
             "type": "library",
@@ -687,9 +684,9 @@
             "description": "UVB API Connector",
             "support": {
                 "issues": "https://github.com/webmenedzser/uvb-connector/issues",
-                "source": "https://github.com/webmenedzser/uvb-connector/tree/1.4.0"
+                "source": "https://github.com/webmenedzser/uvb-connector/tree/1.5.0.1"
             },
-            "time": "2024-01-22T19:23:16+00:00"
+            "time": "2024-03-05T15:11:01+00:00"
         }
     ],
     "packages-dev": [],

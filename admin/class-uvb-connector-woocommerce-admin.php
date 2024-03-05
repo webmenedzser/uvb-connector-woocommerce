@@ -260,24 +260,7 @@ class UVBConnectorWooCommerce_Admin {
      */
     public function sendMinusToUVBService($order_id)
     {
-        $order = wc_get_order($order_id);
-
-        /**
-         * Restock product automatically.
-         */
-        wc_maybe_increase_stock_levels($order_id);
-
-        $email = $order->get_billing_email();
-        $outcome = -1;
-
-        $connector = new UVBConnector(
-            $email,
-            $this->publicKey,
-            $this->privateKey,
-            $this->production
-        );
-
-        return $connector->post($outcome, $order_id);
+        return $this->sendSignalToUVBService($order_id, -1);
     }
 
     /**
@@ -288,10 +271,27 @@ class UVBConnectorWooCommerce_Admin {
      */
     public function sendPlusToUVBService($order_id)
     {
+        return $this->sendSignalToUVBService($order_id, 1);
+    }
+
+    public function sendSignalToUVBService($order_id, $outcome)
+    {
         $order = wc_get_order($order_id);
 
+        /**
+         * Restock product automatically.
+         */
+        if ($outcome === -1) {
+            wc_maybe_increase_stock_levels($order_id);
+        }
+
         $email = $order->get_billing_email();
-        $outcome = 1;
+        $phoneNumber = $order->get_shipping_phone();
+        $countryCode = $order->get_shipping_country();
+        $postalCode = $order->get_shipping_postcode();
+        $addressLine1 = $order->get_shipping_address_1();
+        $addressLine2 = $order->get_shipping_address_2();
+        $addressLine = implode(' ', [$addressLine1, $addressLine2]);
 
         $connector = new UVBConnector(
             $email,
@@ -300,7 +300,7 @@ class UVBConnectorWooCommerce_Admin {
             $this->production
         );
 
-        return $connector->post($outcome, $order_id);
+        return $connector->post($outcome, $order_id, $phoneNumber, $countryCode, $postalCode, $addressLine);
     }
 
     public function addUvbActionsToBulkMenu($actions)
