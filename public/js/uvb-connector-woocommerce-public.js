@@ -13,11 +13,12 @@
             'email': fieldValue
         };
 
-        // We can also pass the url value separately from ajaxurl for front end AJAX implementations
-        jQuery.post(ajax_object.ajax_url, data, function(response) {
-            $('body').trigger('update_checkout');
-            console.log('[Utánvét Ellenőr] Kész!');
-        });
+      // We can also pass the url value separately from ajaxurl for front end AJAX implementations
+      var ajaxUrl = ajax_object.ajax_url ?? ajax_object.ajaxurl;
+      jQuery.post(ajaxUrl, data, function(response) {
+        $('body').trigger('update_checkout');
+        console.log('[Utánvét Ellenőr] Kész!');
+      });
     }
 
     window.addEventListener('load', function($) {
