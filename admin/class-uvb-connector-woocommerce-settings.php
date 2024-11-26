@@ -109,14 +109,6 @@ class UVBConnectorWooCommerce_Settings
             'uvb-connector-woocommerce-admin',
             'uvb_connector_woocommerce_section_id'
         );
-
-        add_settings_field(
-            'flag_orders',
-            __('Flag orders', 'uvb-connector-woocommerce'),
-            array( $this, 'flag_orders_callback' ),
-            'uvb-connector-woocommerce-admin',
-            'uvb_connector_woocommerce_section_id'
-        );
     }
 
     /**
@@ -145,9 +137,6 @@ class UVBConnectorWooCommerce_Settings
         if( isset( $input['payment_methods_to_hide'] ) )
             $input_array['payment_methods_to_hide'] = $input['payment_methods_to_hide'] ?? [];
 
-        if( isset( $input['flag_orders'] ) )
-            $input_array['flag_orders'] = (bool) $input['flag_orders'];
-
         return $input_array;
     }
 
@@ -165,7 +154,6 @@ class UVBConnectorWooCommerce_Settings
     public function sandbox_mode_callback()
     {
         $sandboxMode = isset($this->options['sandbox_mode']) ? $this->options['sandbox_mode'] : false;
-        $endpointUrl = $sandboxMode ? \webmenedzser\UVBConnector\UVBConnector::SANDBOX_BASE_URL : \webmenedzser\UVBConnector\UVBConnector::PRODUCTION_BASE_URL;
 
         if ($sandboxMode) {
             printf('<input type="checkbox" id="sandbox_mode" name="uvb_connector_woocommerce_options[sandbox_mode]" checked />');
@@ -252,21 +240,5 @@ class UVBConnectorWooCommerce_Settings
         $html .= '</fieldset>';
 
         echo $html;
-    }
-
-    /**
-     * Get the settings option array and print one of its values
-     */
-    public function flag_orders_callback()
-    {
-        $flagOrders = isset($this->options['flag_orders']) ? $this->options['flag_orders'] : false;
-
-        if ($flagOrders) {
-            printf('<input type="checkbox" id="flag_orders" name="uvb_connector_woocommerce_options[flag_orders]" checked />');
-        } else {
-            printf('<input type="checkbox" id="flag_orders" name="uvb_connector_woocommerce_options[flag_orders]" />');
-        }
-
-        _e('<p><em>Check to flag orders if the customer reputation is below or around the threshold.</em></p>', 'uvb-connector-woocommerce');
     }
 }

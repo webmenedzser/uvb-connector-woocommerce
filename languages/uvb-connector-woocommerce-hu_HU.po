@@ -3,10 +3,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Utánvét Ellenőr 1.7.7\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uv-b-connector-"
-"for-woocommerce\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uv-b-connector-for-woocommerce\n"
 "POT-Creation-Date: 2023-01-31 17:22+0100\n"
-"PO-Revision-Date: 2023-01-31 17:53+0100\n"
+"PO-Revision-Date: 2024-11-26 10:52+0100\n"
 "Last-Translator: dr. Radics Ottó <iam@ottoradics.com>\n"
 "Language-Team: Utánvét Ellenőr <hello@utanvet-ellenor.hu>\n"
 "Language: hu_HU\n"
@@ -14,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Domain: uvb-connector-woocommerce\n"
 
 #. Plugin Name of the plugin
@@ -73,27 +72,56 @@ msgstr "Állítsd be az API kulcsaidat. "
 
 #: admin/class-uvb-connector-woocommerce-settings.php:176
 msgid ""
-"<p><em>Depending on this setting the plugin will use the production or "
-"sandbox environment of Utánvét Ellenőr. <strong>Please make sure this is set "
-"up correctly.</strong></em></p>"
+"<p><em>Depending on this setting the plugin will use the production or sandbox environment of "
+"Utánvét Ellenőr. <strong>Please make sure this is set up correctly.</strong></em></p>"
 msgstr ""
-"<p><em>A beállításoktól függően ez a plugin az Utánvét Ellenőr éles vagy "
-"teszt környezetét fogja használni. <strong>Fontos, hogy ez helyesen legyen "
-"beállítva.</strong></em></p>"
+"<p><em>A beállításoktól függően ez a plugin az Utánvét Ellenőr éles vagy teszt környezetét "
+"fogja használni. <strong>Fontos, hogy ez helyesen legyen beállítva.</strong></em></p>"
 
 #: admin/class-uvb-connector-woocommerce-settings.php:217
 msgid ""
-"<p><em>Calculated with the following formula: <code>(good-bad) / all</code>, "
-"so a 0.5 reputation can mean 6 successful and 2 rejected deliveries.</em></p>"
+"<p><em>Calculated with the following formula: <code>(good-bad) / all</code>, so a 0.5 "
+"reputation can mean 6 successful and 2 rejected deliveries.</em></p>"
 msgstr ""
-"<p><em>A következő képlettel számolva: <code>(jó - rossz) / összes</code>, "
-"vagyis egy 0.5-es reputáció pl. 6 sikeres és 2 át nem vett rendelést "
-"jelenthet.</em></p>"
+"<p><em>A következő képlettel számolva: <code>(jó - rossz) / összes</code>, vagyis egy 0.5-es "
+"reputáció pl. 6 sikeres és 2 át nem vett rendelést jelenthet.</em></p>"
 
 #: admin/class-uvb-connector-woocommerce-settings.php:272
 msgid ""
-"<p><em>Check to flag orders if the customer reputation is below or around "
-"the threshold.</em></p>"
+"<p><em>Check to flag orders if the customer reputation is below or around the threshold.</em></"
+"p>"
 msgstr ""
-"<p><em>Ha a vásárló reputációja a megadott küszöbérték alatt van, a "
-"rendelést a plugin megjelöli.</em></p>"
+"<p><em>Ha a vásárló reputációja a megadott küszöbérték alatt van, a rendelést a plugin "
+"megjelöli.</em></p>"
+
+#: Possible value of reason
+msgid "Test hash was used."
+msgstr "Teszt e-mail cím."
+
+#: Possible value of reason
+msgid "Run out of request quota for current billing period, upgrade your subscription to resolve!"
+msgstr "Kimerült a csomagod!"
+
+#: Possible value of reason
+msgid "Active exception found for this hash in your account."
+msgstr "A fiókodban szereplő Kivétel."
+
+#: Possible value of reason
+msgid "Temporary e-mail was used."
+msgstr "Eldobható e-mail cím."
+
+#: Possible value of reason
+msgid "Mailbox does not exist."
+msgstr "E-mail fiók nem létezik."
+
+#: Possible value of reason
+msgid "No Signals were found."
+msgstr "Nincs találat."
+
+#: Possible value of reason
+msgid "Total rate did not meet the minimum threshold set."
+msgstr "A vásárló reputációja nem érte el a beállított küszöbértéket."
+
+#: Possible value of reason
+msgid "Signals found, checks passed."
+msgstr "Minden rendben."

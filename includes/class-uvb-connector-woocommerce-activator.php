@@ -3,7 +3,7 @@
 /**
  * Fired during plugin activation
  *
- * @link       https://www.webmenedzser.hu
+ * @link       https://utanvet-ellenor.hu
  * @since      1.0.0
  *
  * @package    UVBConnectorWooCommerce
@@ -18,7 +18,7 @@
  * @since      1.0.0
  * @package    UVBConnectorWooCommerce
  * @subpackage UVBConnectorWooCommerce/includes
- * @author     Radics Ottó <otto@webmenedzser.hu>
+ * @author     Utánvét Ellenőr <hello@utanvet-ellenor.hu>
  */
 class UVBConnectorWooCommerce_Activator {
 
@@ -35,7 +35,7 @@ class UVBConnectorWooCommerce_Activator {
         /**
          * Set default values if they are missing from the database.
          */
-        if (!$options) {
+        if (!is_array($options) || empty($options)) {
             $options['payment_methods_to_hide'] = ['cod'];
             $options['flag_orders'] = true;
             $options['reputation_threshold'] = 0.5;

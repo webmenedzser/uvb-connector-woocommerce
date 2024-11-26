@@ -80,3 +80,35 @@ msgstr ""
 #: admin/class-uvb-connector-woocommerce-settings.php:272
 msgid "<p><em>Check to flag orders if the customer reputation is below or around the threshold.</em></p>"
 msgstr ""
+
+#: Possible value of reason
+msgid "Test hash was used."
+msgstr "Test hash was used."
+
+#: Possible value of reason
+msgid "Run out of request quota for current billing period, upgrade your subscription to resolve!"
+msgstr "Run out of request quota for current billing period, upgrade your subscription to resolve!"
+
+#: Possible value of reason
+msgid "Active exception found for this hash in your account."
+msgstr "Active exception found for this hash in your account."
+
+#: Possible value of reason
+msgid "Temporary e-mail was used."
+msgstr "Temporary e-mail was used."
+
+#: Possible value of reason
+msgid "Mailbox does not exist."
+msgstr "Mailbox does not exist."
+
+#: Possible value of reason
+msgid "No Signals were found."
+msgstr "No Signals were found."
+
+#: Possible value of reason
+msgid "Total rate did not meet the minimum threshold set."
+msgstr "Total rate did not meet the minimum threshold set."
+
+#: Possible value of reason
+msgid "Signals found, checks passed."
+msgstr "Signals found, checks passed."

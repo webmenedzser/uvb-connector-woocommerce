@@ -2,12 +2,12 @@
 
 require UVB_CONNECTOR_VENDOR_AUTOLOAD_PATH;
 
-use webmenedzser\UVBConnector\UVBConnector;
+use UtanvetEllenor\Client;
 
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       https://www.webmenedzser.hu
+ * @link       https://utanvet-ellenor.hu
  * @since      1.0.0
  *
  * @package    UVBConnectorWooCommerce
@@ -22,7 +22,7 @@ use webmenedzser\UVBConnector\UVBConnector;
  *
  * @package    UVBConnectorWooCommerce
  * @subpackage UVBConnectorWooCommerce/public
- * @author     Radics Ottó <otto@webmenedzser.hu>
+ * @author     Utánvét Ellenőr <hello@utanvet-ellenor.hu>
  */
 class UVBConnectorWooCommerce_Public {
 
@@ -48,7 +48,6 @@ class UVBConnectorWooCommerce_Public {
     private $privateKey;
     private $production;
     private $threshold;
-    private $flagOrders;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -68,7 +67,6 @@ class UVBConnectorWooCommerce_Public {
         $this->privateKey = $options['private_api_key'] ?? '';
         $this->production = isset($options['sandbox_mode']) ? false : true;
         $this->threshold = $options['reputation_threshold'] ?: 0.5;
-        $this->flagOrders = $options['flag_orders'] ?? false;
 	}
 
 	/**
@@ -112,7 +110,7 @@ class UVBConnectorWooCommerce_Public {
         }
 
         // If the threshold is not met.
-        if ($response->message->totalRate < $this->threshold) {
+        if ($response->result->reputation < $this->threshold) {
             WC()->session->set('email_is_flagged', 1);
 
             wp_die();
@@ -129,16 +127,12 @@ class UVBConnectorWooCommerce_Public {
      * @return mixed|null
      */
     public function checkInUVBService($email) {
-        $connector = new UVBConnector(
-            $email,
-            $this->publicKey,
-            $this->privateKey,
-            $this->production
-        );
+        $client = new Client($this->publicKey, $this->privateKey);
+        $client->email = $email;
+        $client->threshold = $this->threshold;
+        $client->sandbox = !$this->production;
 
-        $connector->threshold = $this->threshold;
-
-        return json_decode($connector->get());
+        return $client->sendRequest();
     }
 
     /**

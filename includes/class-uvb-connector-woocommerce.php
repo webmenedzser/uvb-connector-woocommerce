@@ -6,7 +6,7 @@
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       https://www.webmenedzser.hu
+ * @link       https://utanvet-ellenor.hu
  * @since      1.0.0
  *
  * @package    UVBConnectorWooCommerce
@@ -25,7 +25,7 @@
  * @since      1.0.0
  * @package    UVBConnectorWooCommerce
  * @subpackage UVBConnectorWooCommerce/includes
- * @author     Radics Ottó <otto@webmenedzser.hu>
+ * @author     Utánvét Ellenőr <hello@utanvet-ellenor.hu>
  */
 class UVBConnectorWooCommerce {
 
@@ -168,7 +168,6 @@ class UVBConnectorWooCommerce {
 
         // Add hooks needed for order flagging.
         $this->loader->add_action( 'woocommerce_new_order', $plugin_admin, 'flagOrder');
-        $this->loader->add_action( 'admin_notices', $plugin_admin, 'showFlagNotice');
         $this->loader->add_action( 'manage_edit-shop_order_columns', $plugin_admin, 'addColumnFlagged');
         $this->loader->add_action( 'manage_woocommerce_page_wc-orders_columns', $plugin_admin, 'addColumnFlagged');
         $this->loader->add_action( 'manage_shop_order_posts_custom_column', $plugin_admin, 'showFlagNoticeInColumn', 5, 2);

@@ -2,12 +2,12 @@
 
 require UVB_CONNECTOR_VENDOR_AUTOLOAD_PATH;
 
-use webmenedzser\UVBConnector\UVBConnector;
+use UtanvetEllenor\Client;
 
 /**
  * The admin-specific functionality of the plugin.
  *
- * @link       https://www.webmenedzser.hu
+ * @link       https://utanvet-ellenor.hu
  * @since      1.0.0
  *
  * @package    UVBConnectorWooCommerce
@@ -22,9 +22,17 @@ use webmenedzser\UVBConnector\UVBConnector;
  *
  * @package    UVBConnectorWooCommerce
  * @subpackage UVBConnectorWooCommerce/admin
- * @author     Radics Ottó <otto@webmenedzser.hu>
+ * @author     Utánvét Ellenőr <hello@utanvet-ellenor.hu>
  */
 class UVBConnectorWooCommerce_Admin {
+    public const TEST_HASH = 'Test hash was used.';
+    public const OUT_OF_QUOTA = 'Run out of request quota for current billing period, upgrade your subscription to resolve!';
+    public const EXCEPTION_FOUND = 'Active exception found for this hash in your account.';
+    public const TEMP_EMAIL = 'Temporary e-mail was used.';
+    public const MAILBOX_NON_EXISTENT = 'Mailbox does not exist.';
+    public const NOT_FOUND = 'No Signals were found.';
+    public const THRESHOLD_NOT_MET = 'Total rate did not meet the minimum threshold set.';
+    public const PASSED = 'Signals found, checks passed.';
 
     /**
      * The ID of this plugin.
@@ -48,7 +56,6 @@ class UVBConnectorWooCommerce_Admin {
     private $privateKey;
     private $production;
     private $threshold;
-    private $flagOrders;
 
     /**
      * Initialize the class and set its properties.
@@ -67,7 +74,6 @@ class UVBConnectorWooCommerce_Admin {
         $this->privateKey = $options['private_api_key'] ?? '';
         $this->production = isset($options['sandbox_mode']) ? false : true;
         $this->threshold = $options['reputation_threshold'] ?: 0.5;
-        $this->flagOrders = $options['flag_orders'] ?? false;
     }
 
     /**
@@ -117,27 +123,19 @@ class UVBConnectorWooCommerce_Admin {
 
     public function flagOrder($orderId)
     {
-        if (!$this->flagOrders) {
-            return;
-        }
-
         $order = new WC_Order($orderId);
         $email = $order->get_billing_email();
-        $connector = new UVBConnector(
-            $email,
-            $this->publicKey,
-            $this->privateKey,
-            $this->production
-        );
+        $client = new Client($this->publicKey, $this->privateKey);
+        $client->email = $email;
+        $client->threshold = $this->threshold;
+        $client->sandbox = !$this->production;
 
-        $connector->threshold = $this->threshold;
-
-        $response = json_decode($connector->get());
+        $response = $client->sendRequest();
         if (!$response) {
             return;
         }
 
-        $flagValue = $this->getFlagValue($response->message->totalRate);
+        $flagValue = $response->result->reason;
         if (!$flagValue) {
             return;
         }
@@ -161,75 +159,48 @@ class UVBConnectorWooCommerce_Admin {
     public static function getFlagFromDb($orderId)
     {
         $metaKey = '_uvb_connector_woocommerce_flag';
+        $value = self::isHposActive() ? wc_get_order($orderId)->get_meta($metaKey, true) : get_post_meta($orderId, $metaKey, true);
 
-        if (self::isHposActive()) {
-            return wc_get_order($orderId)->get_meta($metaKey, true);
-        }
-
-        return get_post_meta($orderId, $metaKey, true);
+        return $value;
     }
 
-    public function getFlagValue($totalRate)
+    public static function getFlagLevel(string $flag) : string
     {
-        if ($this->threshold <= $totalRate) {
-            return null;
-        }
+        switch ($flag) {
+            case self::EXCEPTION_FOUND:
+            case self::TEST_HASH:
+                return 'notice';
 
-        if (0 < $this->threshold - $totalRate && $this->threshold - $totalRate < 0.05) {
-            return 'warning';
-        }
+            case self::NOT_FOUND:
+            case 'warning':
+                return 'warning';
 
-        return 'error';
+            case self::MAILBOX_NON_EXISTENT:
+            case self::THRESHOLD_NOT_MET:
+            case self::TEMP_EMAIL:
+            case self::OUT_OF_QUOTA:
+            case 'error':
+                return 'error';
+
+            case self::PASSED:
+                return 'success';
+
+            default:
+                return 'success';
+        }
     }
 
-    /**
-     * Show notice if the Order was flagged during checkout.
-     */
-    public function showFlagNotice()
+    public static function getFlagLabel(string $flag) : string
     {
-        global $post;
-
-        /**
-         * Do not show notices if the flagging is disabled.
-         */
-        if (!$this->flagOrders) {
-            return;
+        if ($flag === 'error') {
+            return 'Figyelem!';
         }
 
-        /**
-         * If the screen type and ID are not `shop_order`, return.
-         */
-        $screen = get_current_screen();
-        if ($screen->post_type != 'shop_order' || $screen->id != 'shop_order') {
-            return;
+        if ($flag === 'warning') {
+            return 'Bizonytalan eredmény.';
         }
 
-        $flag = self::getFlagFromDb($post->ID);
-
-        /**
-         * If no flag exists for the order, return.
-         */
-        if (!$flag) {
-            return;
-        }
-
-        if ($flag == 'error') {
-            $class = 'notice-error';
-            $message = 'Beware! Fulfilling this order might result in a refused package!';
-        }
-        
-        if ($flag == 'warning') {
-            $class = 'notice-warning';
-            $message = 'The reputation for this customer was around the threshold. Be careful when fulfilling this order!';
-        }
-        
-        if (!isset($message)) {
-            return;
-        }
-
-        $message = __($message, 'uvb-connector-woocommerce' );
-
-        printf( '<div class="notice %1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
+        return __($flag, 'uvb-connector-woocommerce');
     }
 
     public function showFlagNoticeInColumn($column, $order)
@@ -240,14 +211,22 @@ class UVBConnectorWooCommerce_Admin {
 
         $postId = self::isHposActive() ? json_decode($order)->id : $order;
         $flag = self::getFlagFromDb($postId);
+        if (!$flag) {
+            return;
+        }
+
+        $level = self::getFlagLevel($flag);
+        $label = self::getFlagLabel($flag);
 
         if ('uvb_status' === $column) {
-            if ($flag == 'error') {
-                echo '<div style="display: flex; align-items: center; font-weight: bold; color: #db3535;" title="A vásárló az ellenőrzés során nem felelt meg a beállított követelménynek."><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; margin-right: 1rem;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg> Figyelem!</div>';
-            } elseif ($flag == 'warning') {
-                echo '<div style="display: flex; align-items: center; font-weight: bold; color: #c68c02;" title="A vásárló az ellenőrzés során éppen csak megfelelt a beállított követelménynek."><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; margin-right: 1rem;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" /></svg> Bizonytalan eredmény.</div>';
+            if ($level == 'error') {
+                echo '<div style="display: flex; align-items: center; font-weight: bold; color: #db3535;" title="' . $label . '"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; margin-right: 1rem;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>'. $label . '</div>';
+            } elseif ($level == 'warning') {
+                echo '<div style="display: flex; align-items: center; font-weight: bold; color: #c68c02;" title="' . $label . '"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; margin-right: 1rem;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" /></svg>'. $label . '</div>';
+            } elseif ($level == 'success') {
+                echo '<div style="display: flex; align-items: center; font-weight: bold; color: #2c9188;" title="' . $label . '"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; margin-right: 1rem;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>'. $label . '</div>';
             } else {
-                echo '<div style="display: flex; align-items: center; font-weight: bold; color: #2c9188;" title="Nem tudunk arról, hogy a rendelés kiszállítása a vásárlónak kockázatos lenne."><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; margin-right: 1rem;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg> Rendben.</div>';
+                echo '<div style="display: flex; align-items: center; font-weight: bold; color: #777;" title="' . $label . '"><svg xmlns="http://www.w3.org/2000/svg" fill="none" style="width: 1.5rem; height: 1.5rem; margin-right: 1rem;" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>'. $label . '</div>';
             }
         }
     }
@@ -293,14 +272,16 @@ class UVBConnectorWooCommerce_Admin {
         $addressLine2 = $order->get_shipping_address_2();
         $addressLine = implode(' ', [$addressLine1, $addressLine2]);
 
-        $connector = new UVBConnector(
-            $email,
-            $this->publicKey,
-            $this->privateKey,
-            $this->production
-        );
+        $client = new Client($this->publicKey, $this->privateKey);
+        $client->email = $email;
+        $client->orderId = $order_id;
+        $client->outcome = $outcome;
+        $client->countryCode = $countryCode;
+        $client->postalCode = $postalCode;
+        $client->phoneNumber = $phoneNumber;
+        $client->addressLine = $addressLine;
 
-        return $connector->post($outcome, $order_id, $phoneNumber, $countryCode, $postalCode, $addressLine);
+        return $client->sendSignal();
     }
 
     public function addUvbActionsToBulkMenu($actions)

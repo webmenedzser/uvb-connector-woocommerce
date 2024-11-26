@@ -3,7 +3,7 @@
 /**
  * Register all actions and filters for the plugin
  *
- * @link       https://www.webmenedzser.hu
+ * @link       https://utanvet-ellenor.hu
  * @since      1.0.0
  *
  * @package    UVBConnectorWooCommerce
@@ -19,7 +19,7 @@
  *
  * @package    UVBConnectorWooCommerce
  * @subpackage UVBConnectorWooCommerce/includes
- * @author     Radics Ottó <otto@webmenedzser.hu>
+ * @author     Utánvét Ellenőr <hello@utanvet-ellenor.hu>
  */
 class UVBConnectorWooCommerce_Loader {
 

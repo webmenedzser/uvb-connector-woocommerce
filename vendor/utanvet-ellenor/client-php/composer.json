@@ -1,9 +1,9 @@
 {
-  "name": "webmenedzser/uvb-connector-woocommerce",
-  "description": "Utánvét Ellenőr integration for WooCommerce",
+  "name": "utanvet-ellenor/client-php",
+  "description": "Utánvét Ellenőr PHP client library",
   "minimum-stability": "stable",
-  "version": "3.0.0",
   "license": "MIT",
+  "version": "2.0.0",
   "authors": [
     {
       "name": "Utánvét Ellenőr",
@@ -12,6 +12,11 @@
     }
   ],
   "require": {
-    "utanvet-ellenor/client-php": "^2.0.0"
+    "php": ">=7.4 || >=8.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "UtanvetEllenor\\": "src"
+    }
   }
 }
