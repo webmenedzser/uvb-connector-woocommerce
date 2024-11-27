@@ -1,7 +1,7 @@
 === Utánvét Ellenőr ===
 Contributors: ottoradics
 Tags: cash on delivery,check,filter,utánvét,ellenőr,büntetés,utánvét ellenőr,szűrés
-Tested up to: 6.4
+Tested up to: 6.7.1
 Requires PHP: 8.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
