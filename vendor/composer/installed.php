@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'utanvet-ellenor/client-php' => array(
-            'pretty_version' => '2.0.0',
-            'version' => '2.0.0.0',
-            'reference' => '077789ed47ecfaa4517afadcbeecc5f8598381ca',
+            'pretty_version' => '2.1.0',
+            'version' => '2.1.0.0',
+            'reference' => 'fd69a173130a406dc5e9067353a819bd5ef66e45',
             'type' => 'library',
             'install_path' => __DIR__ . '/../utanvet-ellenor/client-php',
             'aliases' => array(),

@@ -3,6 +3,7 @@
 require UVB_CONNECTOR_VENDOR_AUTOLOAD_PATH;
 
 use UtanvetEllenor\Client;
+use UtanvetEllenor\Reasons;
 
 /**
  * The admin-specific functionality of the plugin.
@@ -25,15 +26,6 @@ use UtanvetEllenor\Client;
  * @author     Utánvét Ellenőr <hello@utanvet-ellenor.hu>
  */
 class UVBConnectorWooCommerce_Admin {
-    public const TEST_HASH = 'Test hash was used.';
-    public const OUT_OF_QUOTA = 'Run out of request quota for current billing period, upgrade your subscription to resolve!';
-    public const EXCEPTION_FOUND = 'Active exception found for this hash in your account.';
-    public const TEMP_EMAIL = 'Temporary e-mail was used.';
-    public const MAILBOX_NON_EXISTENT = 'Mailbox does not exist.';
-    public const NOT_FOUND = 'No Signals were found.';
-    public const THRESHOLD_NOT_MET = 'Total rate did not meet the minimum threshold set.';
-    public const PASSED = 'Signals found, checks passed.';
-
     /**
      * The ID of this plugin.
      *
@@ -167,22 +159,22 @@ class UVBConnectorWooCommerce_Admin {
     public static function getFlagLevel(string $flag) : string
     {
         switch ($flag) {
-            case self::EXCEPTION_FOUND:
-            case self::TEST_HASH:
+            case Reasons::EXCEPTION_FOUND:
+            case Reasons::TEST_HASH:
                 return 'notice';
 
-            case self::NOT_FOUND:
+            case Reasons::NOT_FOUND:
             case 'warning':
                 return 'warning';
 
-            case self::MAILBOX_NON_EXISTENT:
-            case self::THRESHOLD_NOT_MET:
-            case self::TEMP_EMAIL:
-            case self::OUT_OF_QUOTA:
+            case Reasons::MAILBOX_NON_EXISTENT:
+            case Reasons::THRESHOLD_NOT_MET:
+            case Reasons::TEMP_EMAIL:
+            case Reasons::OUT_OF_QUOTA:
             case 'error':
                 return 'error';
 
-            case self::PASSED:
+            case Reasons::PASSED:
                 return 'success';
 
             default:
