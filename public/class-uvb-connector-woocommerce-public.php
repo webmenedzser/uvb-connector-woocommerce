@@ -34,6 +34,7 @@ class UVBConnectorWooCommerce_Public {
 	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
 	private $plugin_name;
+    public const SESSION_VARIABLE_NAME = 'utanvet_ellenor_request_is_blocked';
 
 	/**
 	 * The version of this plugin.
@@ -97,9 +98,7 @@ class UVBConnectorWooCommerce_Public {
      * @return void
      */
 	public function check_if_email_is_flagged() {
-        if( WC()->session->get('email_is_flagged') ){
-            WC()->session->__unset('email_is_flagged');
-        }
+        session_start();
 
         $email = sanitize_email($_POST['email']);
         $response = $this->checkInUVBService($email);
@@ -109,14 +108,8 @@ class UVBConnectorWooCommerce_Public {
             wp_die();
         }
 
-        // If the threshold is not met.
-        if ($response->result->reputation < $this->threshold) {
-            WC()->session->set('email_is_flagged', 1);
+        $_SESSION[self::SESSION_VARIABLE_NAME] = $response->result->blocked ? true : false;
 
-            wp_die();
-        }
-
-        // Else.
         wp_die();
     }
 
@@ -176,7 +169,9 @@ class UVBConnectorWooCommerce_Public {
             return $available_gateways;
         }
 
-        if (WC()->session->get('email_is_flagged')) {
+        session_start();
+        $blocked = $_SESSION[self::SESSION_VARIABLE_NAME] ?? false;
+        if ($blocked) {
             $available_gateways = $this->remove_payment_methods($available_gateways);
         }
 
