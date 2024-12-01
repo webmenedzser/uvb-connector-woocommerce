@@ -116,7 +116,7 @@ msgstr "E-mail fiók nem létezik."
 
 #: Possible value of reason
 msgid "No Signals were found."
-msgstr "Nincs találat."
+msgstr "Nem találtunk adatot."
 
 #: Possible value of reason
 msgid "Total rate did not meet the minimum threshold set."
@@ -124,4 +124,4 @@ msgstr "A vásárló reputációja nem érte el a beállított küszöbértéket
 
 #: Possible value of reason
 msgid "Signals found, checks passed."
-msgstr "Minden rendben."
+msgstr "Ellenőrzés sikeres, rendben."

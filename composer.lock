@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b829713ef21f678c13b970670ff136f3",
+    "content-hash": "d8027743cee480e0ca6f1753d07a577f",
     "packages": [
         {
             "name": "utanvet-ellenor/client-php",

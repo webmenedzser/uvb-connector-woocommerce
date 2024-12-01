@@ -160,17 +160,17 @@ class UVBConnectorWooCommerce_Admin {
     {
         switch ($flag) {
             case Reasons::EXCEPTION_FOUND:
+            case Reasons::NOT_FOUND:
             case Reasons::TEST_HASH:
                 return 'notice';
 
-            case Reasons::NOT_FOUND:
+            case Reasons::OUT_OF_QUOTA:
             case 'warning':
                 return 'warning';
 
             case Reasons::MAILBOX_NON_EXISTENT:
             case Reasons::THRESHOLD_NOT_MET:
             case Reasons::TEMP_EMAIL:
-            case Reasons::OUT_OF_QUOTA:
             case 'error':
                 return 'error';
 
@@ -212,13 +212,13 @@ class UVBConnectorWooCommerce_Admin {
 
         if ('uvb_status' === $column) {
             if ($level == 'error') {
-                echo '<div style="display: flex; align-items: center; font-weight: bold; color: #db3535;" title="' . $label . '"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; margin-right: 1rem;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>'. $label . '</div>';
+                echo '<div style="display: flex; align-items: start; font-weight: bold; font-size: 12px; line-height: 1.5; color: #db3535;" title="' . $label . '"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem; margin-right: 0.75rem; flex: none;" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" /></svg>'. $label . '</div>';
             } elseif ($level == 'warning') {
-                echo '<div style="display: flex; align-items: center; font-weight: bold; color: #c68c02;" title="' . $label . '"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; margin-right: 1rem;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" /></svg>'. $label . '</div>';
+                echo '<div style="display: flex; align-items: start; font-weight: bold; font-size: 12px; line-height: 1.5; color: #c68c02;" title="' . $label . '"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem; margin-right: 0.75rem; flex: none;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>'. $label . '</div>';
             } elseif ($level == 'success') {
-                echo '<div style="display: flex; align-items: center; font-weight: bold; color: #2c9188;" title="' . $label . '"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; margin-right: 1rem;" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>'. $label . '</div>';
+                echo '<div style="display: flex; align-items: start; font-weight: bold; font-size: 12px; line-height: 1.5; color: #2c9188;" title="' . $label . '"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem; margin-right: 0.75rem; flex: none;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>'. $label . '</div>';
             } else {
-                echo '<div style="display: flex; align-items: center; font-weight: bold; color: #777;" title="' . $label . '"><svg xmlns="http://www.w3.org/2000/svg" fill="none" style="width: 1.5rem; height: 1.5rem; margin-right: 1rem;" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>'. $label . '</div>';
+                echo '<div style="display: flex; align-items: start; font-weight: bold; font-size: 12px; line-height: 1.5; color: #777;" title="' . $label . '"><svg xmlns="http://www.w3.org/2000/svg" fill="none" style="width: 1.25rem; height: 1.25rem; margin-right: 0.75rem; flex: none;" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>'. $label . '</div>';
             }
         }
     }
