@@ -189,8 +189,6 @@ class UVBConnectorWooCommerce {
 	private function define_public_hooks() {
 		$plugin_public = new UVBConnectorWooCommerce_Public( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'init', $plugin_public, 'init_session');
-
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		$this->loader->add_action( 'wp_ajax_check_if_email_is_flagged', $plugin_public, 'check_if_email_is_flagged' );

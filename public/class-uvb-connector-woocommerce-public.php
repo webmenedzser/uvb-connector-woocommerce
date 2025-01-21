@@ -34,7 +34,7 @@ class UVBConnectorWooCommerce_Public {
 	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
 	private $plugin_name;
-    public const SESSION_VARIABLE_NAME = 'utanvet_ellenor_request_is_blocked';
+    public const TRANSIENT_PREFIX = 'utanvet_ellenor_request_is_blocked';
 
 	/**
 	 * The version of this plugin.
@@ -70,12 +70,6 @@ class UVBConnectorWooCommerce_Public {
         $this->threshold = $options['reputation_threshold'] ?: 0.5;
 	}
 
-    public function init_session() {
-        if(!session_id()) {
-            session_start();
-        }
-    }
-
 	/**
 	 * Register the JavaScript for the public-facing side of the site.
 	 *
@@ -105,14 +99,22 @@ class UVBConnectorWooCommerce_Public {
      */
 	public function check_if_email_is_flagged() {
         $email = sanitize_email($_POST['email']);
-        $response = $this->checkInUVBService($email);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            wp_die();
+        }
 
-        // If no response is given.
+        $response = $this->checkInUVBService($email);
         if ($response === null) {
             wp_die();
         }
 
-        $_SESSION[self::SESSION_VARIABLE_NAME] = $response->result->blocked ? true : false;
+        $key = $this->getSessionKey();
+        if (!$key) {
+            wp_die();
+        }
+
+        $blocked = $response->result->blocked ? true : false;
+        set_transient($key, $blocked, 86400);
 
         wp_die();
     }
@@ -158,6 +160,20 @@ class UVBConnectorWooCommerce_Public {
         return $available_gateways;
     }
 
+    public function getSessionKey() {
+        $session = WC()->session ?? false;
+        if (!$session) {
+            return null;
+        }
+
+        $customerUniqueId = $session->get_customer_unique_id() ?? null;
+        if (!$customerUniqueId) {
+            return null;
+        }
+
+        return implode('_', [self::TRANSIENT_PREFIX, $customerUniqueId]);
+    }
+
     /**
      * Update available payment options
      *
@@ -169,16 +185,17 @@ class UVBConnectorWooCommerce_Public {
             return $available_gateways;
         }
 
-        if (!isset(WC()->session)) {
+        $key = $this->getSessionKey();
+        if (!$key) {
             return $available_gateways;
         }
 
-        $blocked = $_SESSION[self::SESSION_VARIABLE_NAME] ?? false;
-        if ($blocked) {
-            $available_gateways = $this->remove_payment_methods($available_gateways);
+        $blocked = get_transient($key) ?? false;
+        if (!$blocked) {
+            return $available_gateways;
         }
 
-        return $available_gateways;
+        return $this->remove_payment_methods($available_gateways);
     }
 
 }
