@@ -2,7 +2,7 @@
   "name": "webmenedzser/uvb-connector-woocommerce",
   "description": "Utánvét Ellenőr integration for WooCommerce",
   "minimum-stability": "stable",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "license": "MIT",
   "authors": [
     {
