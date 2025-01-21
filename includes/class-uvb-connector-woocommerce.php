@@ -115,7 +115,7 @@ class UVBConnectorWooCommerce {
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-uvb-connector-woocommerce-admin.php';
-        require_once plugin_dir_path( __DIR__ ) . 'admin/class-uvb-connector-woocommerce-settings.php';
+		require_once plugin_dir_path( __DIR__ ) . 'admin/class-uvb-connector-woocommerce-settings.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
@@ -137,11 +137,9 @@ class UVBConnectorWooCommerce {
 	 * @access   private
 	 */
 	private function set_locale() {
-
 		$plugin_i18n = new UVBConnectorWooCommerce_i18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
 	}
 
 	/**
@@ -152,35 +150,33 @@ class UVBConnectorWooCommerce {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
+		$plugin_admin = new UVBConnectorWooCommerce_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_settings = new UVBConnectorWooCommerce_Settings( $this->get_plugin_name(), $this->get_version() );
 
-	$plugin_admin = new UVBConnectorWooCommerce_Admin( $this->get_plugin_name(), $this->get_version() );
-        $plugin_settings = new UVBConnectorWooCommerce_Settings( $this->get_plugin_name(), $this->get_version() );
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 
-        $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
+		// Register order status for WooCommerce
+		$this->loader->add_action( 'init', $plugin_admin, 'registerOrderStatusFlagged');
+		$this->loader->add_action( 'wc_order_statuses', $plugin_admin, 'addOrderStatusFlagged');
 
-	// Register order status for WooCommerce
-	$this->loader->add_action( 'init', $plugin_admin, 'registerOrderStatusFlagged');
-        $this->loader->add_action( 'wc_order_statuses', $plugin_admin, 'addOrderStatusFlagged');
+		// Add hooks to `completed` and `uvb_flagged` order statuses
+		$this->loader->add_action( 'woocommerce_order_status_completed', $plugin_admin, 'sendPlusToUVBService');
+		$this->loader->add_action( 'woocommerce_order_status_uvb_flagged', $plugin_admin, 'sendMinusToUVBService');
 
-        // Add hooks to `completed` and `uvb_flagged` order statuses
-        $this->loader->add_action( 'woocommerce_order_status_completed', $plugin_admin, 'sendPlusToUVBService');
-        $this->loader->add_action( 'woocommerce_order_status_uvb_flagged', $plugin_admin, 'sendMinusToUVBService');
+		// Add hooks needed for order flagging.
+		$this->loader->add_action( 'woocommerce_new_order', $plugin_admin, 'flagOrder');
+		$this->loader->add_action( 'manage_edit-shop_order_columns', $plugin_admin, 'addColumnFlagged');
+		$this->loader->add_action( 'manage_woocommerce_page_wc-orders_columns', $plugin_admin, 'addColumnFlagged');
+		$this->loader->add_action( 'manage_shop_order_posts_custom_column', $plugin_admin, 'showFlagNoticeInColumn', 5, 2);
+		$this->loader->add_action( 'manage_woocommerce_page_wc-orders_custom_column', $plugin_admin, 'showFlagNoticeInColumn', 5, 2);
 
-        // Add hooks needed for order flagging.
-        $this->loader->add_action( 'woocommerce_new_order', $plugin_admin, 'flagOrder');
-        $this->loader->add_action( 'manage_edit-shop_order_columns', $plugin_admin, 'addColumnFlagged');
-        $this->loader->add_action( 'manage_woocommerce_page_wc-orders_columns', $plugin_admin, 'addColumnFlagged');
-        $this->loader->add_action( 'manage_shop_order_posts_custom_column', $plugin_admin, 'showFlagNoticeInColumn', 5, 2);
-        $this->loader->add_action( 'manage_woocommerce_page_wc-orders_custom_column', $plugin_admin, 'showFlagNoticeInColumn', 5, 2);
+		// Add hooks for bulk order status changes
+		$this->loader->add_filter('bulk_actions-edit-shop_order', $plugin_admin, 'addUvbActionsToBulkMenu');
+		$this->loader->add_filter('bulk_actions-woocommerce_page_wc-orders', $plugin_admin, 'addUvbActionsToBulkMenu');
+		$this->loader->add_action('handle_bulk_actions-edit-shop_order', $plugin_admin, 'catchUvbActionFromBulkMenu', 10, 3);
+		$this->loader->add_action('handle_bulk_actions-woocommerce_page_wc-orders', $plugin_admin, 'catchUvbActionFromBulkMenu', 10 , 3);
 
-        // Add hooks for bulk order status changes
-        $this->loader->add_filter('bulk_actions-edit-shop_order', $plugin_admin, 'addUvbActionsToBulkMenu');
-        $this->loader->add_filter('bulk_actions-woocommerce_page_wc-orders', $plugin_admin, 'addUvbActionsToBulkMenu');
-        $this->loader->add_action('handle_bulk_actions-edit-shop_order', $plugin_admin, 'catchUvbActionFromBulkMenu', 10, 3);
-        $this->loader->add_action('handle_bulk_actions-woocommerce_page_wc-orders', $plugin_admin, 'catchUvbActionFromBulkMenu', 10 , 3);
-
-        $this->loader->add_action( 'admin_menu', $plugin_settings, 'add_plugin_page');
-
+		$this->loader->add_action( 'admin_menu', $plugin_settings, 'add_plugin_page');
 	}
 
 	/**
@@ -191,18 +187,16 @@ class UVBConnectorWooCommerce {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
-
 		$plugin_public = new UVBConnectorWooCommerce_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'init', $plugin_public, 'init_session');
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
-        $this->loader->add_action( 'wp_ajax_check_if_email_is_flagged', $plugin_public, 'check_if_email_is_flagged' );
-        $this->loader->add_action( 'wp_ajax_nopriv_check_if_email_is_flagged', $plugin_public, 'check_if_email_is_flagged' );
+		$this->loader->add_action( 'wp_ajax_check_if_email_is_flagged', $plugin_public, 'check_if_email_is_flagged' );
+		$this->loader->add_action( 'wp_ajax_nopriv_check_if_email_is_flagged', $plugin_public, 'check_if_email_is_flagged' );
 
-        $this->loader->add_action( 'woocommerce_available_payment_gateways', $plugin_public, 'update_available_payment_options' );
-
+		$this->loader->add_action( 'woocommerce_available_payment_gateways', $plugin_public, 'update_available_payment_options' );
 	}
 
 	/**
