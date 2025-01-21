@@ -70,6 +70,12 @@ class UVBConnectorWooCommerce_Public {
         $this->threshold = $options['reputation_threshold'] ?: 0.5;
 	}
 
+    public function init_session() {
+        if(!session_id()) {
+            session_start();
+        }
+    }
+
 	/**
 	 * Register the JavaScript for the public-facing side of the site.
 	 *
@@ -98,8 +104,6 @@ class UVBConnectorWooCommerce_Public {
      * @return void
      */
 	public function check_if_email_is_flagged() {
-        session_start();
-
         $email = sanitize_email($_POST['email']);
         $response = $this->checkInUVBService($email);
 
@@ -169,7 +173,6 @@ class UVBConnectorWooCommerce_Public {
             return $available_gateways;
         }
 
-        session_start();
         $blocked = $_SESSION[self::SESSION_VARIABLE_NAME] ?? false;
         if ($blocked) {
             $available_gateways = $this->remove_payment_methods($available_gateways);
