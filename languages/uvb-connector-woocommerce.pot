@@ -1,0 +1,118 @@
+# Copyright (C) 2023 Utánvét Ellenőr
+# This file is distributed under the GPL-3.0+.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Utánvét Ellenőr 1.7.7\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uv-b-connector-for-woocommerce\n"
+"POT-Creation-Date: 2023-01-31 17:22+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Utánvét Ellenőr <hello@utanvet-ellenor.hu>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.2.2\n"
+"X-Domain: uvb-connector-woocommerce\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+msgid "Utánvét Ellenőr"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+msgid "https://utanvet-ellenor.hu"
+msgstr ""
+
+#. Description of the plugin
+msgid "🚨 Kiszállításokat szűrünk és védünk."
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:25
+msgid "UV-B Connector"
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:42
+msgid "UV-B Connector Settings"
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:68
+msgid "API settings"
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:75
+msgid "Sandbox mode"
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:83
+msgid "Public API Key"
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:91
+msgid "Private API Key"
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:99
+msgid "Reputation threshold"
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:107
+msgid "Payment methods to hide"
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:115
+msgid "These payment methods are hidden if the customer has failed the check."
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:115
+msgid "Fallback payment methods"
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:115
+msgid "These payment methods are shown only if the customer has failed the check."
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:159
+msgid "Enter your API keys and set your preferences. "
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:176
+msgid "<p><em>Depending on this setting the plugin will use the production or sandbox environment of Utánvét Ellenőr. <strong>Please make sure this is set up correctly.</strong></em></p>"
+msgstr ""
+
+#: admin/class-uvb-connector-woocommerce-settings.php:217
+msgid "<p><em>Calculated with the following formula: <code>(good-bad) / all</code>, so a 0.5 reputation can mean 6 successful and 2 rejected deliveries.</em></p>"
+msgstr ""
+
+#: Possible value of reason
+msgid "Test hash was used."
+msgstr "Test hash was used."
+
+#: Possible value of reason
+msgid "Run out of request quota for current billing period, upgrade your subscription to resolve!"
+msgstr "Run out of request quota for current billing period, upgrade your subscription to resolve!"
+
+#: Possible value of reason
+msgid "Active exception found for this hash in your account."
+msgstr "Active exception found for this hash in your account."
+
+#: Possible value of reason
+msgid "Temporary e-mail was used."
+msgstr "Temporary e-mail was used."
+
+#: Possible value of reason
+msgid "Mailbox does not exist."
+msgstr "Mailbox does not exist."
+
+#: Possible value of reason
+msgid "No Signals were found."
+msgstr "No Signals were found."
+
+#: Possible value of reason
+msgid "Total rate did not meet the minimum threshold set."
+msgstr "Total rate did not meet the minimum threshold set."
+
+#: Possible value of reason
+msgid "Signals found, checks passed."
+msgstr "Signals found, checks passed."

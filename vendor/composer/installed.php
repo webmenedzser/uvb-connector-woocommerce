@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'webmenedzser/uvb-connector-woocommerce',
-        'pretty_version' => '3.0.3',
-        'version' => '3.0.3.0',
+        'pretty_version' => '3.2.0',
+        'version' => '3.2.0.0',
         'reference' => null,
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
@@ -20,8 +20,8 @@
             'dev_requirement' => false,
         ),
         'webmenedzser/uvb-connector-woocommerce' => array(
-            'pretty_version' => '3.0.3',
-            'version' => '3.0.3.0',
+            'pretty_version' => '3.2.0',
+            'version' => '3.2.0.0',
             'reference' => null,
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',

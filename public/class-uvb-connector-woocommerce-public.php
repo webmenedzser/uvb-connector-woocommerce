@@ -160,6 +160,33 @@ class UVBConnectorWooCommerce_Public {
         return $available_gateways;
     }
 
+    /**
+     * Hide fallback payment method from available gateways
+     *
+     * @param $available_gateways
+     *
+     * @return array
+     */
+    public function hide_fallback_payment_method($available_gateways) : array {
+        $options = get_option('uvb_connector_woocommerce_options');
+        $fallback_payment_methods = $options['fallback_payment_methods'] ?? [];
+
+        /**
+         * If there are no fallback payment methods, return.
+         */
+        if (!$fallback_payment_methods || !count($fallback_payment_methods)) {
+            return $available_gateways;
+        }
+
+        foreach ($available_gateways as $key => $value) {
+            if (in_array($key, $fallback_payment_methods)) {
+                unset($available_gateways[$key]);
+            }
+        }
+
+        return $available_gateways;
+    }
+
     public function getSessionKey() {
         $session = WC()->session ?? false;
         if (!$session) {
@@ -181,18 +208,20 @@ class UVBConnectorWooCommerce_Public {
      * @return mixed
      */
     public function update_available_payment_options($available_gateways) {
+        $available_gateways_without_fallback = $this->hide_fallback_payment_method($available_gateways);
+
         if ( is_admin() ) {
-            return $available_gateways;
+            return $available_gateways_without_fallback;
         }
 
         $key = $this->getSessionKey();
         if (!$key) {
-            return $available_gateways;
+            return $available_gateways_without_fallback;
         }
 
         $blocked = get_transient($key) ?? false;
         if (!$blocked) {
-            return $available_gateways;
+            return $available_gateways_without_fallback;
         }
 
         return $this->remove_payment_methods($available_gateways);

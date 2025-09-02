@@ -109,6 +109,14 @@ class UVBConnectorWooCommerce_Settings
             'uvb-connector-woocommerce-admin',
             'uvb_connector_woocommerce_section_id'
         );
+
+        add_settings_field(
+            'fallback_payment_methods',
+            __('Fallback payment methods', 'uvb-connector-woocommerce'),
+            array( $this, 'fallback_payment_methods_callback' ),
+            'uvb-connector-woocommerce-admin',
+            'uvb_connector_woocommerce_section_id'
+        );
     }
 
     /**
@@ -136,6 +144,9 @@ class UVBConnectorWooCommerce_Settings
 
         if( isset( $input['payment_methods_to_hide'] ) )
             $input_array['payment_methods_to_hide'] = $input['payment_methods_to_hide'] ?? [];
+
+        if( isset( $input['fallback_payment_methods'] ) )
+            $input_array['fallback_payment_methods'] = $input['fallback_payment_methods'] ?? [];
 
         return $input_array;
     }
@@ -219,11 +230,12 @@ class UVBConnectorWooCommerce_Settings
         $html = '<fieldset>';
 
         foreach ($options as $option) {
-            $html .= "<label for='$option->id'>";
+            $for = "payment_methods_to_hide_$option->id";
+            $html .= "<label for='$for'>";
 
             $html .= "<input 
               name='uvb_connector_woocommerce_options[payment_methods_to_hide][]' 
-              id='$option->id' 
+              id='$for' 
               type='checkbox' 
               value='$option->id'";
 
@@ -237,6 +249,45 @@ class UVBConnectorWooCommerce_Settings
             $html .= "</label><br/>";
         }
 
+        $html .= '<p><em>' . __('These payment methods are hidden if the customer has failed the check.', 'uvb-connector-woocommerce') . '</em></p>';
+        $html .= '</fieldset>';
+
+        echo $html;
+    }
+
+    public function fallback_payment_methods_callback()
+    {
+        $values = $this->options['fallback_payment_methods'] ?? [];
+        $options = WC()->payment_gateways()->payment_gateways() ?? [];
+
+        if (!count($options)) {
+            echo 'No payment methods installed yet.';
+            return;
+        }
+
+        $html = '<fieldset>';
+
+        foreach ($options as $option) {
+            $for = "fallback_payment_methods_$option->id";
+            $html .= "<label for='$for'>";
+
+            $html .= "<input 
+              name='uvb_connector_woocommerce_options[fallback_payment_methods][]' 
+              id='$for' 
+              type='checkbox' 
+              value='$option->id'";
+
+            if (in_array($option->id, $values)) {
+                $html .= "checked";
+            }
+
+            $html .= "/>";
+
+            $html .= "$option->title";
+            $html .= "</label><br/>";
+        }
+
+        $html .= '<p><em>' . __('These payment methods are shown only if the customer has failed the check.', 'uvb-connector-woocommerce') . '</em></p>';
         $html .= '</fieldset>';
 
         echo $html;

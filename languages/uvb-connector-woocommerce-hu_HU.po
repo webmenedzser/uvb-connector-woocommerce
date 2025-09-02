@@ -63,8 +63,16 @@ msgid "Payment methods to hide"
 msgstr "Elrejtendő fizetési módok"
 
 #: admin/class-uvb-connector-woocommerce-settings.php:115
-msgid "Flag orders"
-msgstr "Rendelések megjelölése"
+msgid "These payment methods are hidden if the customer has failed the check."
+msgstr "Ezek a fizetési módok eltűnnek, ha a vásárló nem ment át az ellenőrzésen."
+
+#: admin/class-uvb-connector-woocommerce-settings.php:115
+msgid "Fallback payment methods"
+msgstr "Tartalék fizetési módok"
+
+#: admin/class-uvb-connector-woocommerce-settings.php:115
+msgid "These payment methods are shown only if the customer has failed the check."
+msgstr "Ezek a fizetési módok csak akkor jelennek meg, ha a vásárló nem ment át az ellenőrzésen."
 
 #: admin/class-uvb-connector-woocommerce-settings.php:159
 msgid "Enter your API keys and set your preferences. "
@@ -85,14 +93,6 @@ msgid ""
 msgstr ""
 "<p><em>A következő képlettel számolva: <code>(jó - rossz) / összes</code>, vagyis egy 0.5-es "
 "reputáció pl. 6 sikeres és 2 át nem vett rendelést jelenthet.</em></p>"
-
-#: admin/class-uvb-connector-woocommerce-settings.php:272
-msgid ""
-"<p><em>Check to flag orders if the customer reputation is below or around the threshold.</em></"
-"p>"
-msgstr ""
-"<p><em>Ha a vásárló reputációja a megadott küszöbérték alatt van, a rendelést a plugin "
-"megjelöli.</em></p>"
 
 #: Possible value of reason
 msgid "Test hash was used."
