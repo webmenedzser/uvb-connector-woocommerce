@@ -11,6 +11,10 @@ class UVBConnectorWooCommerce_Settings
      */
     public function __construct()
     {
+        $this->options = get_option( 'uvb_connector_woocommerce_options' );
+        if (!is_array($this->options)) {
+            $this->options = [];
+        }
         add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
         add_action( 'admin_init', array( $this, 'page_init' ) );
     }
@@ -37,6 +41,9 @@ class UVBConnectorWooCommerce_Settings
     {
         // Set class property
         $this->options = get_option( 'uvb_connector_woocommerce_options' );
+        if (!is_array($this->options)) {
+            $this->options = [];
+        }
         ?>
         <div class="wrap">
             <h1><?php _e('UV-B Connector Settings', 'uvb-connector-woocommerce'); ?></h1>

@@ -61,11 +61,14 @@ class UVBConnectorWooCommerce_Admin {
         $this->version = $version;
 
         $options = get_option('uvb_connector_woocommerce_options');
+        if (!is_array($options)) {
+            $options = [];
+        }
 
         $this->publicKey = $options['public_api_key'] ?? '';
         $this->privateKey = $options['private_api_key'] ?? '';
         $this->production = isset($options['sandbox_mode']) ? false : true;
-        $this->threshold = $options['reputation_threshold'] ?: 0.5;
+        $this->threshold = $options['reputation_threshold'] ?? 0.5;
     }
 
     /**

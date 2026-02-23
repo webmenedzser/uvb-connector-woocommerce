@@ -63,11 +63,14 @@ class UVBConnectorWooCommerce_Public {
 		$this->version = $version;
 
         $options = get_option('uvb_connector_woocommerce_options');
+        if (!is_array($options)) {
+            $options = [];
+        }
 
         $this->publicKey = $options['public_api_key'] ?? '';
         $this->privateKey = $options['private_api_key'] ?? '';
         $this->production = isset($options['sandbox_mode']) ? false : true;
-        $this->threshold = $options['reputation_threshold'] ?: 0.5;
+        $this->threshold = $options['reputation_threshold'] ?? 0.5;
 	}
 
 	/**
@@ -142,6 +145,9 @@ class UVBConnectorWooCommerce_Public {
      */
     public function remove_payment_methods($available_gateways) : array {
         $options = get_option('uvb_connector_woocommerce_options');
+        if (!is_array($options)) {
+            $options = [];
+        }
         $payment_methods_to_hide = $options['payment_methods_to_hide'] ?? [];
 
         /**
@@ -169,6 +175,9 @@ class UVBConnectorWooCommerce_Public {
      */
     public function hide_fallback_payment_method($available_gateways) : array {
         $options = get_option('uvb_connector_woocommerce_options');
+        if (!is_array($options)) {
+            $options = [];
+        }
         $fallback_payment_methods = $options['fallback_payment_methods'] ?? [];
 
         /**
