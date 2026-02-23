@@ -101,12 +101,17 @@ class UVBConnectorWooCommerce_Public {
      * @return void
      */
 	public function check_if_email_is_flagged() {
-        $email = sanitize_email($_POST['email']);
+        $email = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
+        $countryCode = isset($_POST['country_code']) ? sanitize_text_field(wp_unslash($_POST['country_code'])) : '';
+        $postalCode = isset($_POST['postal_code']) ? sanitize_text_field(wp_unslash($_POST['postal_code'])) : '';
+        $phoneNumber = isset($_POST['phone_number']) ? sanitize_text_field(wp_unslash($_POST['phone_number'])) : '';
+        $addressLine = isset($_POST['address_line']) ? sanitize_text_field(wp_unslash($_POST['address_line'])) : '';
+        $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '';
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             wp_die();
         }
 
-        $response = $this->checkInUVBService($email);
+        $response = $this->checkInUVBService($email, $countryCode, $postalCode, $phoneNumber, $addressLine, $userAgent);
         if ($response === null) {
             wp_die();
         }
@@ -128,11 +133,16 @@ class UVBConnectorWooCommerce_Public {
      * @param $email
      * @return mixed|null
      */
-    public function checkInUVBService($email) {
+    public function checkInUVBService($email, $countryCode = '', $postalCode = '', $phoneNumber = '', $addressLine = '', $userAgent = '') {
         $client = new Client($this->publicKey, $this->privateKey);
         $client->email = $email;
         $client->threshold = $this->threshold;
         $client->sandbox = !$this->production;
+        $client->countryCode = $countryCode;
+        $client->postalCode = $postalCode;
+        $client->phoneNumber = $phoneNumber;
+        $client->addressLine = $addressLine;
+        $client->userAgent = $userAgent;
 
         return $client->sendRequest();
     }
