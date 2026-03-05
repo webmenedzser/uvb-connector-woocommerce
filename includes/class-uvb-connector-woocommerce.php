@@ -195,6 +195,9 @@ class UVBConnectorWooCommerce {
 		$this->loader->add_action( 'wp_ajax_nopriv_check_if_email_is_flagged', $plugin_public, 'check_if_email_is_flagged' );
 
 		$this->loader->add_action( 'woocommerce_available_payment_gateways', $plugin_public, 'update_available_payment_options' );
+		$this->loader->add_action( 'woocommerce_store_api_cart_update_customer_from_request', $plugin_public, 'check_if_email_is_flagged_store_api', 10, 2 );
+		$this->loader->add_action( 'woocommerce_store_api_checkout_update_customer_from_request', $plugin_public, 'check_if_email_is_flagged_store_api', 10, 2 );
+		$this->loader->add_action( 'woocommerce_store_api_checkout_update_order_from_request', $plugin_public, 'check_if_email_is_flagged_store_api', 10, 2 );
 	}
 
 	/**

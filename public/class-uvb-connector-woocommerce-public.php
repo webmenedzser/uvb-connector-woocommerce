@@ -101,29 +101,90 @@ class UVBConnectorWooCommerce_Public {
      * @return void
      */
 	public function check_if_email_is_flagged() {
-        $email = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
-        $countryCode = isset($_POST['country_code']) ? sanitize_text_field(wp_unslash($_POST['country_code'])) : '';
-        $postalCode = isset($_POST['postal_code']) ? sanitize_text_field(wp_unslash($_POST['postal_code'])) : '';
-        $phoneNumber = isset($_POST['phone_number']) ? sanitize_text_field(wp_unslash($_POST['phone_number'])) : '';
-        $addressLine = isset($_POST['address_line']) ? sanitize_text_field(wp_unslash($_POST['address_line'])) : '';
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            wp_die();
+        $email = isset($_POST['email']) ? wp_unslash($_POST['email']) : '';
+        $countryCode = isset($_POST['country_code']) ? wp_unslash($_POST['country_code']) : '';
+        $postalCode = isset($_POST['postal_code']) ? wp_unslash($_POST['postal_code']) : '';
+        $phoneNumber = isset($_POST['phone_number']) ? wp_unslash($_POST['phone_number']) : '';
+        $addressLine = isset($_POST['address_line']) ? wp_unslash($_POST['address_line']) : '';
+
+        $this->check_and_store_blocked($email, $countryCode, $postalCode, $phoneNumber, $addressLine);
+
+        wp_die();
+    }
+
+    /**
+     * Function to handle Store API requests and set the blocked transient
+     *
+     * @param mixed $object WC_Customer or WC_Order.
+     * @param mixed $request WP_REST_Request.
+     * @return void
+     */
+    public function check_if_email_is_flagged_store_api($object, $request) {
+        if (!$request || !is_object($request) || !method_exists($request, 'get_param')) {
+            return;
         }
+
+        $billing = $request->get_param('billing_address');
+        $shipping = $request->get_param('shipping_address');
+
+        $shipping = (is_array($shipping) && array_filter($shipping)) ? $shipping : [];
+        $billing = (is_array($billing) && array_filter($billing)) ? $billing : [];
+
+        $address = $shipping ?: $billing;
+        if (!$address) {
+            return;
+        }
+
+        $email = $billing['email'] ?? ($address['email'] ?? '');
+        $countryCode = $address['country'] ?? '';
+        $postalCode = $address['postcode'] ?? '';
+        $phoneNumber = $billing['phone'] ?? ($address['phone'] ?? '');
+        $addressLine = $address['address_1'] ?? '';
+
+        $cartToken = '';
+        if (method_exists($request, 'get_header')) {
+            $cartToken = $request->get_header('cart-token');
+        }
+        if (!$cartToken && isset($_SERVER['HTTP_CART_TOKEN'])) {
+            $cartToken = sanitize_text_field(wp_unslash($_SERVER['HTTP_CART_TOKEN']));
+        }
+
+        $this->check_and_store_blocked($email, $countryCode, $postalCode, $phoneNumber, $addressLine, $cartToken);
+    }
+
+    /**
+     * Common logic to validate input, check UVB service, and store the blocked flag.
+     *
+     * @param string $email
+     * @param string $countryCode
+     * @param string $postalCode
+     * @param string $phoneNumber
+     * @param string $addressLine
+     * @return void
+     */
+    private function check_and_store_blocked($email, $countryCode, $postalCode, $phoneNumber, $addressLine, $cartToken = '') {
+        $email = sanitize_email($email);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
+
+        $countryCode = sanitize_text_field($countryCode);
+        $postalCode = sanitize_text_field($postalCode);
+        $phoneNumber = sanitize_text_field($phoneNumber);
+        $addressLine = sanitize_text_field($addressLine);
 
         $response = $this->checkInUVBService($email, $countryCode, $postalCode, $phoneNumber, $addressLine);
         if ($response === null) {
-            wp_die();
+            return;
         }
 
-        $key = $this->getSessionKey();
+        $key = $this->getSessionKey($cartToken);
         if (!$key) {
-            wp_die();
+            return;
         }
 
         $blocked = $response->result->blocked ? true : false;
         set_transient($key, $blocked, 86400);
-
-        wp_die();
     }
 
     /**
@@ -204,7 +265,12 @@ class UVBConnectorWooCommerce_Public {
         return $available_gateways;
     }
 
-    public function getSessionKey() {
+    public function getSessionKey($cartToken = null) {
+        $cartToken = $cartToken ?: $this->getCartTokenFromRequest();
+        if ($cartToken) {
+            return implode('_', [self::TRANSIENT_PREFIX, hash('sha256', $cartToken)]);
+        }
+
         $session = WC()->session ?? false;
         if (!$session) {
             return null;
@@ -225,6 +291,19 @@ class UVBConnectorWooCommerce_Public {
         }
 
         return implode('_', [self::TRANSIENT_PREFIX, $customerUniqueId]);
+    }
+
+    /**
+     * Try to extract Cart-Token from the current request.
+     *
+     * @return string|null
+     */
+    private function getCartTokenFromRequest() {
+        if (empty($_SERVER['HTTP_CART_TOKEN'])) {
+            return null;
+        }
+
+        return sanitize_text_field(wp_unslash($_SERVER['HTTP_CART_TOKEN']));
     }
 
     /**
