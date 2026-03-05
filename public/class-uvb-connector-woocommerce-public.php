@@ -210,7 +210,16 @@ class UVBConnectorWooCommerce_Public {
             return null;
         }
 
-        $customerUniqueId = $session->get_customer_unique_id() ?? null;
+        $customerUniqueId = null;
+        if (method_exists($session, 'get_customer_unique_id')) {
+            $customerUniqueId = $session->get_customer_unique_id();
+        } elseif (method_exists($session, 'get_customer_id')) {
+            $customerUniqueId = $session->get_customer_id();
+        } elseif (method_exists($session, 'get_session_id')) {
+            $customerUniqueId = $session->get_session_id();
+        }
+
+        $customerUniqueId = $customerUniqueId ?? null;
         if (!$customerUniqueId) {
             return null;
         }
