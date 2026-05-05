@@ -119,9 +119,12 @@ class UVBConnectorWooCommerce_Admin {
     public function flagOrder($orderId)
     {
         $order = new WC_Order($orderId);
-        $email = $order->get_billing_email();
         $client = new Client($this->publicKey, $this->privateKey);
-        $client->email = $email;
+        $client->email = $order->get_billing_email();
+        $client->countryCode = $order->get_shipping_country();
+        $client->postalCode = $order->get_shipping_postcode();
+        $client->phoneNumber = $order->get_shipping_phone();
+        $client->addressLine = implode(' ', [$order->get_shipping_address_1(), $order->get_shipping_address_2()]);
         $client->threshold = $this->threshold;
         $client->sandbox = !$this->production;
 
